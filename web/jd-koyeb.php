@@ -1,8 +1,4 @@
 <?php
-    require 'Logger.php';
-    $logHandler = new CLogFileHandler(__DIR__ . '/logs/phpjd' . date('Y-m-d') . '.log');
-
-    $log = Log::Init($logHandler, 15);
 
     $header = array('User-Agent:Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
                     'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -76,7 +72,6 @@ function go()
         if (strpos($str, 'pdos_captcha'))
         {
             echo 'pdos_captcha,出错啦';
-            Log::DEBUG(':pdos_captcha,出错啦');
         }
         $str = json_decode($str, true);
         // var_dump($str);
@@ -86,12 +81,10 @@ function go()
         $item_name = $str['wareInfo']['wname'];
         echo('$item_name:' . $item_name . "<br>");
 
-        Log::DEBUG('$price：' . $price . ' $item_name: ' . $item_name);
 
     }
     catch (Exception $e)
     {
-        Log::DEBUG('Foreach：' . $e->getMessage());
     }
 
 
