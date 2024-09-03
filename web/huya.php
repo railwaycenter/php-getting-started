@@ -26,15 +26,26 @@
     </div>
     <div class="row ">
         <div class="col">
-            <input type="text" name="bid" id="bid" list="appNamelist" placeholder="请输入虎牙id" />
+            <input type="text" name="bid" id="bid" list="appNamelist" placeholder="请输入虎牙id"/>
             <datalist id="appNamelist">
                 <option value="859042">正恒-紫宸【相声木兰】</option>
                 <option value="330679">怀逝【李白导师】</option>
                 <option value="391946">小炎【妲己的神】</option>
                 <option value="691346">宇晨【马可导师】</option>
                 <option value="825912">念青【嘴强王者】</option>
+                <option value="651353">久爱-猪猪小悠</option>
+
             </datalist>
             <button class="btn btn-success" id="btnConfirm" type="submit">提交</button>
+            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank">虎牙直播地址</a>
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col">
+            <input type="text" name="roomId" id="roomId" placeholder="请输入虎牙id"/>
+            <input type="text" name="roomName" id="roomName" placeholder="请输入虎牙房间名"/>
+            <button class="btn btn-success" id="btnSubmit" type="submit">保存</button>
         </div>
     </div>
     <?php
@@ -42,7 +53,8 @@
         $type = empty($_GET['type']) ? "nodisplay" : trim($_GET['type']);
         $url = empty($_GET['id']) ? "391946" : trim($_GET['id']);
         // 检查URL中是否包含数字
-        if (preg_match('/\d+/', $url)) {
+        if (preg_match('/\d+/', $url))
+        {
             // 使用正则表达式提取所有数字
             preg_match('/\d+/', $url, $matches);
 
@@ -52,7 +64,7 @@
         }
         else
         {
-            $id=$url;
+            $id = $url;
         }
         // print_r($id);
         $cdn = empty($_GET['cdn']) ? "hwcdn" : trim($_GET['cdn']);
@@ -62,12 +74,15 @@
 
         function get_content($apiurl, $flag)
         {
-            if ($flag == "mobile") {
+            if ($flag == "mobile")
+            {
                 $headers = array(
                     'Content-Type: application/x-www-form-urlencoded',
                     'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.3 Mobile/15E148 Safari/604.1'
                 );
-            } else {
+            }
+            else
+            {
                 $arr = [
                     "appId" => 5002,
                     "byPass" => 3,
@@ -85,16 +100,18 @@
             }
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $apiurl);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            if ($flag == "uid") {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            if ($flag == "uid")
+            {
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
             }
             $data = curl_exec($ch);
             curl_close($ch);
+
             return $data;
         }
 
@@ -116,6 +133,7 @@
         {
             $now = intval(microtime(true) * 1000);
             $rand = rand(0, 1000) | 0;
+
             return intval(($now % 10000000000 * 1000 + $rand) % 4294967295);
         }
 
@@ -132,39 +150,71 @@
             $q["uuid"] = strval(get_uuid());
             $ss = md5("{$q["seqid"]}|{$q["ctype"]}|{$q["t"]}");
             $q["fm"] = base64_decode($q["fm"]);
-            $q["fm"] = str_replace(["$0", "$1", "$2", "$3"], [$q["uid"], $streamname, $ss, $q["wsTime"]], $q["fm"]);
+            $q["fm"] = str_replace([
+                "$0",
+                "$1",
+                "$2",
+                "$3"
+            ], [
+                $q["uid"],
+                $streamname,
+                $ss,
+                $q["wsTime"]
+            ], $q["fm"]);
             $q["wsSecret"] = md5($q["fm"]);
             unset($q["fm"]);
-            if (array_key_exists("txyp", $q)) {
+            if (array_key_exists("txyp", $q))
+            {
                 unset($q["txyp"]);
             }
+
             return http_build_query($q);
         }
 
         function format($realdata, $uid)
         {
-            $stream_info = ['flv' => [], 'hls' => []];
-            $cdn_type = ['HY' => 'hycdn', 'TX' => 'txcdn', 'HW' => 'hwcdn', 'HS' => 'hscdn', 'WS' => 'wscdn','AL'=>'hycdn'];
-            foreach ($realdata["stream"]["baseSteamInfoList"] as $s) {
+            $stream_info = [
+                'flv' => [],
+                'hls' => []
+            ];
+            $cdn_type = [
+                'HY' => 'hycdn',
+                'TX' => 'txcdn',
+                'HW' => 'hwcdn',
+                'HS' => 'hscdn',
+                'WS' => 'wscdn',
+                'AL' => 'hycdn'
+            ];
+            foreach ($realdata["stream"]["baseSteamInfoList"] as $s)
+            {
                 // var_dump($s);
-                if ($s["sFlvUrl"]) {
-                    $stream_info["flv"][$cdn_type[$s["sCdnType"]]] = $s["sFlvUrl"] . '/' . $s["sStreamName"] . '.' . $s["sFlvUrlSuffix"] . '?' . process_anticode($s["sFlvAntiCode"], $uid, $s["sStreamName"]);
+                if ($s["sFlvUrl"])
+                {
+                    $stream_info["flv"][$cdn_type[$s["sCdnType"]]] = $s["sFlvUrl"] . '/' . $s["sStreamName"] . '.'
+                        . $s["sFlvUrlSuffix"] . '?' . process_anticode($s["sFlvAntiCode"], $uid, $s["sStreamName"]);
                 }
-                if ($s["sHlsUrl"]) {
-                    $stream_info["hls"][$cdn_type[$s["sCdnType"]]] = $s["sHlsUrl"] . '/' . $s["sStreamName"] . '.' . $s["sHlsUrlSuffix"] . '?' . process_anticode($s["sHlsAntiCode"], $uid, $s["sStreamName"]);
+                if ($s["sHlsUrl"])
+                {
+                    $stream_info["hls"][$cdn_type[$s["sCdnType"]]] = $s["sHlsUrl"] . '/' . $s["sStreamName"] . '.'
+                        . $s["sHlsUrlSuffix"] . '?' . process_anticode($s["sHlsAntiCode"], $uid, $s["sStreamName"]);
                 }
             }
+
             return $stream_info;
         }
 
-        if ($jsonStr["status"] == 200) {
+        if ($jsonStr["status"] == 200)
+        {
             $realurl = format($realdata, $uid);
-            if ($type == "display") {
+            if ($type == "display")
+            {
                 print_r($realurl);
                 exit();
             }
-            if ($media == "flv") {
-                switch ($cdn) {
+            if ($media == "flv")
+            {
+                switch ($cdn)
+                {
                     case $cdn:
                         $mediaurl = str_replace("http://", "https://", $realurl["flv"][$cdn]);
                         break;
@@ -173,8 +223,10 @@
                         break;
                 }
             }
-            if ($media == "hls") {
-                switch ($cdn) {
+            if ($media == "hls")
+            {
+                switch ($cdn)
+                {
                     case $cdn:
                         $mediaurl = str_replace("http://", "https://", $realurl["hls"][$cdn]);
                         break;
@@ -186,7 +238,9 @@
             //header('location:' . $mediaurl);
             echo($mediaurl);
             // exit();
-        } else {
+        }
+        else
+        {
             //header('location:' . $mediaurl);
             echo($mediaurl);
             // exit();
@@ -232,21 +286,68 @@
         },
     });
 
-    $(document).ready(function () {
+    $(document).ready(function ()
+    {
+        // 读取现有的房间数据
+        let roomData = JSON.parse(localStorage.getItem('roomData')) || {};
+
+        function addOption()
+        {
+            // 遍历 roomData 并生成 <option> 元素
+            let optionsHtml = '';
+            for (let roomNumber in roomData)
+            {
+                if (roomData.hasOwnProperty(roomNumber))
+                {
+                    optionsHtml += `<option value="${roomNumber}">${roomData[roomNumber]}</option>`;
+                }
+            }
+            $("#appNamelist").append(optionsHtml);
+        }
+        addOption();
+
         $("#bid").focus();
-        $("#bid").keydown(function(e){
-            if(e.keyCode == 13){
+        $("#bid").keydown(function (e)
+        {
+            if (e.keyCode == 13)
+            {
                 $('#btnConfirm').trigger("click");
             }
         });
 
-        $("#btnConfirm").click(function () {
+        $("#btnConfirm").click(function ()
+        {
             console.log('$("#bid").val()');
             console.log($("#bid").val());
-            window.location.replace(window.location.protocol+"//"+window.location.host + window.location.pathname + "?id=" + $("#bid").val())
+            window.location.replace(window.location.protocol + "//" + window.location.host + window.location.pathname + "?id=" + $("#bid").val())
             //alert(window.location.href + "?id=" + $("#bid").val());
             //alert(window.location.host);
         });
+
+        //保存数据
+        $("#btnSubmit").click(function ()
+        {
+            console.log($("#roomId").val());
+            console.log($("#roomName").val());
+
+            // 添加新的房间号-房间名对
+            roomData[$("#roomId").val()] = $("#roomName").val();
+
+            // 将更新后的对象存储回 LocalStorage
+            localStorage.setItem('roomData', JSON.stringify(roomData));
+
+            // 输出更新后的数据
+            console.log(JSON.parse(localStorage.getItem('roomData')));
+            // 结果可能是：{101: 'Conference Room A', 102: 'Updated Conference Room B', 201: 'Meeting Room 1', 301: 'New Conference Room'}
+
+            let tempOptionsHtml = `<option value="${$("#roomId").val()}">${$("#roomName").val()}</option>`;
+            $("#appNamelist").append(tempOptionsHtml);
+
+            $("#roomId").val('');
+            $("#roomName").val('');
+        });
+
+
     });
 </script>
 </body>
