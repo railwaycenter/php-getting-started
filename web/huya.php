@@ -8,14 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/font-awesome/6.0.0/css/all.min.css">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/bootstrap/4.6.1/css/bootstrap.min.css">
     <!-- DataTables -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.10.21/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
 
     <!-- Theme style -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/css/adminlte.min.css">
 </head>
 <body>
 <div class="container">
@@ -53,14 +53,14 @@
         $type = empty($_GET['type']) ? "nodisplay" : trim($_GET['type']);
         $url = empty($_GET['id']) ? "391946" : trim($_GET['id']);
         // 检查URL中是否包含数字
-        if (preg_match('/\d+/', $url))
+        if (preg_match('/\d+/', $url, $match))
         {
             // 使用正则表达式提取所有数字
-            preg_match('/\d+/', $url, $matches);
+            //preg_match('/\d+/', $url, $matches);
 
             // 输出结果
-            $id = $matches[0];
-            // print_r($numbers);
+            $id = $match[0];
+            // print_r($id);
         }
         else
         {
@@ -249,7 +249,7 @@
         echo("<script>(async () => {
   try {
     //const firstUrl = 'https://example.com'; // 这里使用了一个示例URL
-    await navigator.clipboard.writeText('$firstUrl');
+    ////await navigator.clipboard.writeText('$firstUrl');
     // console.log('复制成功:', firstUrl);
   } catch (err) {
     console.error('复制失败:', err.name, err.message);
@@ -259,22 +259,22 @@
 
 </div>
 <!-- jQuery -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/??jquery/3.5.1/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-10-y/bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.0.5/dist/js/adminlte.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-jeditable@2.0.17/src/jquery.jeditable.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/js/adminlte.min.js"></script>
+<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/jeditable.js/2.0.19/jquery.jeditable.min.js"></script>
 <!-- DataTables -->
-<script src="https://cdn.jsdelivr.net/npm/datatables.net@1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <!-- 引入 ECharts 文件 -->
-<script src="https://cdn.jsdelivr.net/npm/echarts@4.8.0/dist/echarts.min.js"></script>
+<script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/echarts/4.8.0/echarts.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-switch@3.4.0/dist/js/bootstrap-switch.min.js"></script>-->
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@0.14.7/dist/hls.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flv.js@1.5.0/dist/flv.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/hls.js/1.1.5/hls.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/flv.js/1.6.2/flv.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/dplayer/1.26.0/DPlayer.min.js"></script>
 <script>
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),
