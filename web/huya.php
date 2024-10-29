@@ -352,3 +352,19 @@
 </script>
 </body>
 </html>
+<?php
+    $host = 'ep-rapid-disk-71674411.us-east-1.pg.koyeb.app';
+    $port = '5432';
+    $dbname = 'koyebdb';
+    $user = 'koyeb-adm';
+    $password = '5pgHstORKSD1';
+
+    try {
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+        $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+        echo "Connected to the database successfully!";
+    } catch (PDOException $e) {
+        echo 'Connection failed: ' . $e->getMessage();
+    }
+
+?>
