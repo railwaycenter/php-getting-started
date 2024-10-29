@@ -211,6 +211,17 @@
                 showMessage(response);
             });
         }
+
+        function showAllTables() {
+            sendRequest('get_all_tables', '', function(response) {
+                if (response.length) {
+                    const tablesList = document.getElementById('tables-list');
+                    tablesList.innerHTML = '<ul>' + response.map(table => `<li>${table}</li>`).join('') + '</ul>';
+                } else {
+                    showMessage("No tables found.");
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -272,6 +283,13 @@
         Column Name: <input type="text" id="column_name" required>
         <button onclick="deleteColumn()">Delete Column</button>
     </div>
+
+    <div class="section">
+        <h3>Show All Tables</h3>
+        <button onclick="showAllTables()">Show All Tables</button>
+        <div id="tables-list"></div>
+    </div>
+
 </div>
 
 <!-- Modal -->

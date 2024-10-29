@@ -1,4 +1,5 @@
 <?php
+    ob_start(); // 开始输出缓冲
     header('Content-Type: application/json'); // 设置返回类型为 JSON
     $host = 'ep-rapid-disk-71674411.us-east-1.pg.koyeb.app';
     $port = '5432';
@@ -119,9 +120,11 @@
         } elseif ($action === 'drop_column') {
             $columnName = $_POST['column_name'];
             $response = dropColumn($pdo, $columnName);
+        } elseif ($action === 'get_all_tables') {  // 新增操作
+            $response = json_decode(getAllTables($pdo), true);
         }
 
         echo json_encode($response); // 返回 JSON 格式响应
     }
-
+    ob_end_flush(); // 输出缓冲内容
 ?>
