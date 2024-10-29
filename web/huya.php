@@ -369,27 +369,27 @@
 
 
     // SQL语句，用于创建表
-    $sql = "
-    CREATE TABLE IF NOT EXISTS roomData (
-        id SERIAL PRIMARY KEY,
-        roomId VARCHAR(255) NOT NULL,
-        roomName VARCHAR(255),
-        addDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-    ";
+    // $sql = "
+    // CREATE TABLE IF NOT EXISTS roomData (
+    //     id SERIAL PRIMARY KEY,
+    //     roomId VARCHAR(255) NOT NULL,
+    //     roomName VARCHAR(255),
+    //     addDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    // );
+    // ";
+    //
+    // // 执行SQL语句
+    // $pdo->exec($sql);
 
-    // 执行SQL语句
-    $pdo->exec($sql);
 
-
-    try {
-        $sql = "INSERT INTO roomData (roomId, roomName) VALUES (:value1, :value2)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['value1' => '145263', 'value2' => '沐苏【国一镜】']);
-        echo "Data inserted successfully!";
-    } catch (PDOException $e) {
-        echo 'Insert failed: ' . $e->getMessage();
-    }
+    // try {
+    //     $sql = "INSERT INTO roomData (roomId, roomName) VALUES (:value1, :value2)";
+    //     $stmt = $pdo->prepare($sql);
+    //     $stmt->execute(['value1' => '145263', 'value2' => '沐苏【国一镜】']);
+    //     echo "Data inserted successfully!";
+    // } catch (PDOException $e) {
+    //     echo 'Insert failed: ' . $e->getMessage();
+    // }
 
 
     try {
