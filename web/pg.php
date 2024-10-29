@@ -162,6 +162,18 @@
             });
         }
 
+        function createTable() {
+            sendRequest('create_table', '', function(response) {
+                showMessage(response);
+            });
+        }
+
+        function dropTable() {
+            sendRequest('drop_table', '', function(response) {
+                showMessage(response);
+            });
+        }
+        
         function renameColumn() {
             const oldColumnName = document.getElementById('old_column_name').value;
             const newColumnName = document.getElementById('new_column_name').value;
@@ -219,6 +231,16 @@
         <h3>Delete Room</h3>
         Room ID: <input type="text" id="delete_id" required>
         <button onclick="deleteRoom()">Delete Room</button>
+    </div>
+
+    <div class="section">
+        <h3>Create Table</h3>
+        <button onclick="createTable()">Create Table</button>
+    </div>
+
+    <div class="section">
+        <h3>Drop Table</h3>
+        <button onclick="dropTable()">Drop Table</button>
     </div>
 
     <div class="section">
