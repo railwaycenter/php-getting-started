@@ -100,11 +100,22 @@
     <script>
         function sendRequest(action, data, callback) {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'pgsql.php', true);
+            xhr.open('POST', 'pgsql.php', true);  // 确保文件名正确
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    callback(xhr.responseText);
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        try {
+                            const jsonResponse = JSON.parse(xhr.responseText); // 尝试解析 JSON
+                            callback(jsonResponse);
+                        } catch (e) {
+                            console.error("Failed to parse JSON response: ", e);
+                            showMessage("Error: Invalid response format.");
+                        }
+                    } else {
+                        console.error("Request failed: ", xhr.status);
+                        showMessage("Error: " + xhr.statusText);
+                    }
                 }
             };
             xhr.send(data);
@@ -173,7 +184,7 @@
                 showMessage(response);
             });
         }
-        
+
         function renameColumn() {
             const oldColumnName = document.getElementById('old_column_name').value;
             const newColumnName = document.getElementById('new_column_name').value;
