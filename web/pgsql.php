@@ -74,7 +74,7 @@
 
     // 获取列名的函数
     function getColumnNames($pdo, $tableName) {
-        $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :tableName AND table_schema = 'public'";
+        $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :tableName";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['tableName' => $tableName]);
         $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
