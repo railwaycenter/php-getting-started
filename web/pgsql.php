@@ -7,79 +7,92 @@
     $password = '5pgHstORKSD1';
 
     try {
-        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
-        $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-        echo "Connected to the database successfully!";
+        $pdo = new PDO("pgsql:host=$host;dbname=$db", $user, $pass);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        die('Connection failed: ' . $e->getMessage());
+        echo "Connection failed: " . $e->getMessage();
+        exit;
     }
 
+    // 创建表的函数
+    function createTable($pdo) {
+        $sql = "CREATE TABLE IF NOT EXISTS roomData (
+                room_id VARCHAR(50),
+                room_name VARCHAR(100),
+                add_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )";
+        $pdo->exec($sql);
+    }
 
-    // SQL语句，用于创建表
-    // $sql = "
-    // CREATE TABLE IF NOT EXISTS roomData (
-    //     id SERIAL PRIMARY KEY,
-    //     room_id VARCHAR(255) NOT NULL,
-    //     room_name VARCHAR(255),
-    //     add_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    // );
-    // ";
-    //
-    // // 执行SQL语句
-    // $pdo->exec($sql);
+    // 删除表的函数
+    function dropTable($pdo) {
+        $sql = "DROP TABLE IF EXISTS roomData";
+        $pdo->exec($sql);
+    }
 
-
-    // try {
-    //     $sql = "INSERT INTO roomData (room_id, room_name) VALUES (:value1, :value2)";
-    //     $stmt = $pdo->prepare($sql);
-    //     $stmt->execute(['value1' => '145263', 'value2' => '沐苏【国一镜】']);
-    //     echo "Data inserted successfully!";
-    // } catch (PDOException $e) {
-    //     echo 'Insert failed: ' . $e->getMessage();
-    // }
-
-    // 增加数据的函数（Create）
+    // 增加数据的函数
     function addData($pdo, $room_id, $room_name) {
         $sql = "INSERT INTO roomData (room_id, room_name) VALUES (:room_id, :room_name)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':room_id' => $room_id, ':room_name' => $room_name]);
-        return "Data added successfully!";
+        $stmt->execute(['room_id' => $room_id, 'room_name' => $room_name]);
+        return "Room added successfully.";
     }
 
-    // 读取数据的函数（Read）
+    // 获取数据的函数
     function getData($pdo) {
         $sql = "SELECT * FROM roomData";
         $stmt = $pdo->query($sql);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $output = "<h3>Room List:</h3>";
-        foreach ($results as $row) {
-            $output .= "Room ID: " . htmlspecialchars($row['room_id']) . " - Room Name: " . htmlspecialchars($row['room_name']) . "<br>";
-        }
-        return $output;
+        $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return json_encode($rooms);
     }
 
-    // 更新数据的函数（Update）
+    // 更新数据的函数
     function updateData($pdo, $id, $newRoomId, $newRoomName) {
-        $sql = "UPDATE roomData SET room_id = :room_id, room_name = :room_name WHERE id = :id";
+        $sql = "UPDATE roomData SET room_id = :newRoomId, room_name = :newRoomName WHERE room_id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':room_id' => $newRoomId, ':room_name' => $newRoomName, ':id' => $id]);
-        return "Data updated successfully!";
+        $stmt->execute(['newRoomId' => $newRoomId, 'newRoomName' => $newRoomName, 'id' => $id]);
+        return "Room updated successfully.";
     }
 
-    // 删除数据的函数（Delete）
+    // 删除数据的函数
     function deleteData($pdo, $id) {
-        $sql = "DELETE FROM roomData WHERE id = :id";
+        $sql = "DELETE FROM roomData WHERE room_id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        return "Data deleted successfully!";
+        $stmt->execute(['id' => $id]);
+        return "Room deleted successfully.";
+    }
+
+    // 修改列名的函数
+    function renameColumn($pdo, $oldColumnName, $newColumnName) {
+        $sql = "ALTER TABLE roomData RENAME COLUMN $oldColumnName TO $newColumnName";
+        $pdo->exec($sql);
+    }
+
+    // 获取列名的函数
+    function getColumnNames($pdo) {
+        $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = 'roomData'";
+        $stmt = $pdo->query($sql);
+        $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return json_encode($columns);
+    }
+
+    // 删除列的函数
+    function dropColumn($pdo, $columnName) {
+        $sql = "ALTER TABLE roomData DROP COLUMN $columnName";
+        $pdo->exec($sql);
     }
 
     // 处理请求
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $action = $_POST['action'];
 
-        if ($action === 'add') {
+        if ($action === 'create_table') {
+            createTable($pdo);
+            echo "Table 'roomData' created successfully (if it did not already exist).";
+        } elseif ($action === 'drop_table') {
+            dropTable($pdo);
+            echo "Table 'roomData' deleted successfully.";
+        } elseif ($action === 'add') {
             $room_id = $_POST['room_id'];
             $room_name = $_POST['room_name'];
             echo addData($pdo, $room_id, $room_name);
@@ -93,6 +106,17 @@
         } elseif ($action === 'delete') {
             $id = $_POST['id'];
             echo deleteData($pdo, $id);
+        } elseif ($action === 'rename_column') {
+            $oldColumnName = $_POST['old_column_name'];
+            $newColumnName = $_POST['new_column_name'];
+            renameColumn($pdo, $oldColumnName, $newColumnName);
+            echo "Column '$oldColumnName' renamed to '$newColumnName' successfully.";
+        } elseif ($action === 'get_columns') {
+            echo getColumnNames($pdo);
+        } elseif ($action === 'drop_column') {
+            $columnName = $_POST['column_name'];
+            dropColumn($pdo, $columnName);
+            echo "Column '$columnName' deleted successfully.";
         }
     }
 
