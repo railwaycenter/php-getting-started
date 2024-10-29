@@ -87,6 +87,14 @@
         return ["message" => "Column '$columnName' deleted successfully."];
     }
 
+    // 获取所有表的函数
+    function getAllTables($pdo) {
+        $sql = "SELECT tablename FROM pg_tables WHERE schemaname = 'public'";
+        $stmt = $pdo->query($sql);
+        $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return json_encode($tables);
+    }
+
     // 处理请求
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $action = $_POST['action'];

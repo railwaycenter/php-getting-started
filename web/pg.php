@@ -119,6 +119,7 @@
                 }
             };
             xhr.send(data);
+            //xhr.send(`action=${encodeURIComponent(action)}&${data}`);
         }
 
         function showMessage(message) {
@@ -174,13 +175,13 @@
         }
 
         function createTable() {
-            sendRequest('create_table', '', function(response) {
+            sendRequest('create_table', 'action=create_table', function(response) {
                 showMessage(response);
             });
         }
 
         function dropTable() {
-            sendRequest('drop_table', '', function(response) {
+            sendRequest('drop_table', 'action=drop_table', function(response) {
                 showMessage(response);
             });
         }
@@ -196,10 +197,20 @@
         }
 
         function showColumnNames() {
-            sendRequest('get_columns', '', function(response) {
-                const columns = JSON.parse(response);
-                const columnList = columns.map(col => `<li>${col}</li>`).join('');
-                document.getElementById('column_names').innerHTML = `<ul>${columnList}</ul>`;
+            const tableName = document.getElementById('table-name').value;
+            if (!tableName) {
+                showMessage("Please enter a table name.");
+                return;
+            }
+
+            const data = `action=show_column_names&table_name=${encodeURIComponent(tableName)}`;
+            sendRequest('show_column_names', data, function(response) {
+                const columnsList = document.getElementById('columns-list');
+                if (response && response.length) {
+                    columnsList.innerHTML = '<ul>' + response.map(column => `<li>${column}</li>`).join('') + '</ul>';
+                } else {
+                    columnsList.innerHTML = 'No columns found or table does not exist.';
+                }
             });
         }
 
@@ -213,7 +224,8 @@
         }
 
         function showAllTables() {
-            sendRequest('get_all_tables', '', function(response) {
+            const data = "action=get_all_tables"; // 发送的请求数据
+            sendRequest('get_all_tables', data, function(response) {
                 if (response.length) {
                     const tablesList = document.getElementById('tables-list');
                     tablesList.innerHTML = '<ul>' + response.map(table => `<li>${table}</li>`).join('') + '</ul>';
@@ -274,8 +286,9 @@
 
     <div class="section">
         <h3>Show Column Names</h3>
-        <button onclick="showColumnNames()">Get Column Names</button>
-        <div id="column_names"></div>
+        <input type="text" id="table-name" placeholder="Enter table name">
+        <button onclick="showColumnNames()">Show Columns</button>
+        <div id="columns-list"></div>
     </div>
 
     <div class="section">
