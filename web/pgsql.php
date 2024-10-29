@@ -73,11 +73,12 @@
     }
 
     // 获取列名的函数
-    function getColumnNames($pdo) {
-        $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = 'roomData'";
-        $stmt = $pdo->query($sql);
+    function getColumnNames($pdo, $tableName) {
+        $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :tableName AND table_schema = 'public'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['tableName' => $tableName]);
         $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        return json_encode($columns);
+        return $columns; // 返回列名数组
     }
 
     // 删除列的函数
@@ -124,7 +125,8 @@
             $newColumnName = $_POST['new_column_name'];
             $response = renameColumn($pdo, $oldColumnName, $newColumnName);
         } elseif ($action === 'get_columns') {
-            $response = json_decode(getColumnNames($pdo), true);
+            $tableName = $_POST['table_name'];
+            $response = json_decode(getColumnNames($pdo, $tableName), true);
         } elseif ($action === 'drop_column') {
             $columnName = $_POST['column_name'];
             $response = dropColumn($pdo, $columnName);

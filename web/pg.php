@@ -203,7 +203,7 @@
                 return;
             }
 
-            const data = `action=show_column_names&table_name=${encodeURIComponent(tableName)}`;
+            const data = `action=get_columns&table_name=${encodeURIComponent(tableName)}`;
             sendRequest('show_column_names', data, function(response) {
                 const columnsList = document.getElementById('columns-list');
                 if (response && response.length) {
