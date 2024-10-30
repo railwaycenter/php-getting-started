@@ -136,7 +136,8 @@
             $room_name = $_POST['room_name'];
             $response = addData($pdo, $room_id, $room_name);
         } elseif ($action === 'get') {
-            $response = json_decode(getData($pdo), true);
+            // $response = json_decode(getData($pdo), true);
+            $response = getData($pdo);
         } elseif ($action === 'update') {
             $id = $_POST['id'];
             $newRoomId = $_POST['new_room_id'];
