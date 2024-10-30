@@ -1,4 +1,5 @@
 <?php
+    error_reporting(0); // 禁用错误报告
     ob_start(); // 开始输出缓冲
     header('Content-Type: application/json'); // 设置返回类型为 JSON
     $host = 'ep-rapid-disk-71674411.us-east-1.pg.koyeb.app';

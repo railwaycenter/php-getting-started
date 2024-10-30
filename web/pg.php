@@ -101,7 +101,7 @@
         function sendRequest(action, data, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'pgsql.php', true);  // 确保文件名正确
-            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
@@ -118,7 +118,7 @@
                     }
                 }
             };
-            xhr.send(JSON.stringify(data));
+            xhr.send(data);
             //xhr.send(`action=${encodeURIComponent(action)}&${data}`);
         }
 
