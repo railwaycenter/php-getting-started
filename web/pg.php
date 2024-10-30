@@ -101,7 +101,7 @@
         function sendRequest(action, data, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'pgsql.php', true);  // 确保文件名正确
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
@@ -118,7 +118,7 @@
                     }
                 }
             };
-            xhr.send(data);
+            xhr.send(JSON.stringify(data));
             //xhr.send(`action=${encodeURIComponent(action)}&${data}`);
         }
 
@@ -204,7 +204,7 @@
             }
 
             const data = `action=get_columns&table_name=${encodeURIComponent(tableName)}`;
-            sendRequest('show_column_names', data, function(response) {
+            sendRequest('get_columns', data, function(response) {
                 const columnsList = document.getElementById('columns-list');
                 if (response && response.length) {
                     columnsList.innerHTML = '<ul>' + response.map(column => `<li>${column}</li>`).join('') + '</ul>';

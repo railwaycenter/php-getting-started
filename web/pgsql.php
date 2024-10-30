@@ -35,10 +35,23 @@
 
     // 增加数据的函数
     function addData($pdo, $room_id, $room_name) {
+        // 简单的数据类型检查示例，这里可以根据实际需求进一步完善
+        if (!is_string($room_id) ||!is_string($room_name)) {
+            return ["error" => "room_id and room_name should be strings"];
+        }
+
         $sql = "INSERT INTO roomData (room_id, room_name) VALUES (:room_id, :room_name)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(['room_id' => $room_id, 'room_name' => $room_name]);
-        return ["message" => "Room added successfully."];
+        try
+        {
+            $stmt->execute([
+                'room_id' => $room_id,
+                'room_name' => $room_name
+            ]);
+            return ["message" => "Room added successfully."];
+        }catch (PDOException $e) {
+            return ["error" => "Room addition failed: ". $e->getMessage()];
+        }
     }
 
     // 获取数据的函数
@@ -67,8 +80,11 @@
 
     // 修改列名的函数
     function renameColumn($pdo, $oldColumnName, $newColumnName) {
-        $sql = "ALTER TABLE roomData RENAME COLUMN $oldColumnName TO $newColumnName";
-        $pdo->exec($sql);
+        $sql = "ALTER TABLE roomData RENAME COLUMN :oldColumnName TO :newColumnName";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':oldColumnName', $oldColumnName, PDO::PARAM_STR);
+        $stmt->bindParam(':newColumnName', $newColumnName, PDO::PARAM_STR);
+        $stmt->execute();
         return ["message" => "Column '$oldColumnName' renamed to '$newColumnName' successfully."];
     }
 
@@ -83,10 +99,17 @@
 
     // 删除列的函数
     function dropColumn($pdo, $columnName) {
-        $sql = "ALTER TABLE roomData DROP COLUMN $columnName";
-        $pdo->exec($sql);
-        return ["message" => "Column '$columnName' deleted successfully."];
+        $sql = "ALTER TABLE roomData DROP COLUMN :columnName";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':columnName', $columnName, PDO::PARAM_STR);
+        try {
+            $stmt->execute();
+            return ["message" => "Column '$columnName' deleted successfully."];
+        } catch (PDOException $e) {
+            return ["error" => "Column deletion failed: ". $e->getMessage()];
+        }
     }
+
 
     // 获取所有表的函数
     function getAllTables($pdo) {
