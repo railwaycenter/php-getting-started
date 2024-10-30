@@ -58,7 +58,7 @@
 
     // 获取数据的函数
     function getData($pdo) {
-        $sql = "SELECT * FROM roomData";
+        $sql = "SELECT * FROM roomData order by id desc";
         $stmt = $pdo->query($sql);
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return ["data" => $rooms]; // 返回 JSON 格式的数组
@@ -68,7 +68,7 @@
     function updateData($pdo, $id, $newRoomId, $newRoomName) {
         $sql = "UPDATE roomData SET room_id = :newRoomId, room_name = :newRoomName WHERE room_id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(['newRoomId' => $newRoomId, 'newRoomName' => $newRoomName, 'id' => $id]);
+        $stmt->execute(['newRoomId' => $newRoomId, 'newRoomName' => $newRoomName, 'room_id' => $id]);
         return ["message" => "Room updated successfully."];
     }
 
