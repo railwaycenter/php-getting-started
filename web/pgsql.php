@@ -11,7 +11,7 @@
         $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        echo json_encode(["error" => "Connection failed: " . $e->getMessage()]);
+        echo json_encode([message => "Connection failed: " . $e->getMessage()]);
         exit;
     }
 
@@ -37,7 +37,7 @@
     function addData($pdo, $room_id, $room_name) {
         // 简单的数据类型检查示例，这里可以根据实际需求进一步完善
         if (!is_string($room_id) ||!is_string($room_name)) {
-            return ["error" => "room_id and room_name should be strings"];
+            return [message => "room_id and room_name should be strings"];
         }
 
         $sql = "INSERT INTO roomData (room_id, room_name) VALUES (:room_id, :room_name)";
@@ -50,7 +50,7 @@
             ]);
             return ["message" => "Room added successfully."];
         }catch (PDOException $e) {
-            return ["error" => "Room addition failed: ". $e->getMessage()];
+            return [message => "Room addition failed: ". $e->getMessage()];
         }
     }
 
@@ -94,7 +94,7 @@
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['tableName' => $tableName]);
         $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        return $columns; // 返回列名数组
+        return json_encode($columns); // 返回列名数组
     }
 
     // 删除列的函数
@@ -106,7 +106,7 @@
             $stmt->execute();
             return ["message" => "Column '$columnName' deleted successfully."];
         } catch (PDOException $e) {
-            return ["error" => "Column deletion failed: ". $e->getMessage()];
+            return [message => "Column deletion failed: ". $e->getMessage()];
         }
     }
 

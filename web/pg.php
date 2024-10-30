@@ -139,7 +139,7 @@
             const data = `action=add&room_id=${encodeURIComponent(roomId)}&room_name=${encodeURIComponent(roomName)}`;
 
             sendRequest('add', data, function(response) {
-                showMessage(response);
+                showMessage(response.message);
                 getRooms(); // Refresh room list
             });
         }
@@ -159,7 +159,7 @@
             const data = `action=update&id=${encodeURIComponent(id)}&new_room_id=${encodeURIComponent(newRoomId)}&new_room_name=${encodeURIComponent(newRoomName)}`;
 
             sendRequest('update', data, function(response) {
-                showMessage(response);
+                showMessage(response.message);
                 getRooms(); // Refresh room list
             });
         }
@@ -169,20 +169,20 @@
             const data = `action=delete&id=${encodeURIComponent(id)}`;
 
             sendRequest('delete', data, function(response) {
-                showMessage(response);
+                showMessage(response.message);
                 getRooms(); // Refresh room list
             });
         }
 
         function createTable() {
             sendRequest('create_table', 'action=create_table', function(response) {
-                showMessage(response);
+                showMessage(response.message);
             });
         }
 
         function dropTable() {
             sendRequest('drop_table', 'action=drop_table', function(response) {
-                showMessage(response);
+                showMessage(response.message);
             });
         }
 
@@ -192,7 +192,7 @@
             const data = `action=rename_column&old_column_name=${encodeURIComponent(oldColumnName)}&new_column_name=${encodeURIComponent(newColumnName)}`;
 
             sendRequest('rename_column', data, function(response) {
-                showMessage(response);
+                showMessage(response.message);
             });
         }
 
@@ -219,7 +219,7 @@
             const data = `action=drop_column&column_name=${encodeURIComponent(columnName)}`;
 
             sendRequest('drop_column', data, function(response) {
-                showMessage(response);
+                showMessage(response.message);
             });
         }
 
