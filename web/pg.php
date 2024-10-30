@@ -147,7 +147,7 @@
         function getRooms() {
             sendRequest('get', 'action=get', function(response) {
                 const rooms = response.data;
-                const roomList = rooms.map(room => `<li>${room.room_id} - ${room.room_name}</li>`).join('');
+                const roomList = rooms.map(room => `<li>${room.id} : ${room.room_id} - ${room.room_name}</li>`).join('');
                 document.getElementById('room_list').innerHTML = `<ul>${roomList}</ul>`;
             });
         }
