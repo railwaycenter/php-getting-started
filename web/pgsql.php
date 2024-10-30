@@ -18,6 +18,7 @@
     // 创建表的函数
     function createTable($pdo) {
         $sql = "CREATE TABLE IF NOT EXISTS roomData (
+                id SERIAL PRIMARY KEY,
                 room_id VARCHAR(50),
                 room_name VARCHAR(100),
                 add_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
