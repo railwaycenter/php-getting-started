@@ -61,7 +61,7 @@
         $sql = "SELECT * FROM roomData";
         $stmt = $pdo->query($sql);
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return json_encode($rooms);
+        return ["data" => $rooms]; // 返回 JSON 格式的数组
     }
 
     // 更新数据的函数
