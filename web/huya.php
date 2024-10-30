@@ -286,6 +286,30 @@
         },
     });
 
+    function sendRequest(action, data, callback) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'pgsql.php', true);  // 确保文件名正确
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    try {
+                        const jsonResponse = JSON.parse(xhr.responseText); // 尝试解析 JSON
+                        callback(jsonResponse);
+                    } catch (e) {
+                        console.error("Failed to parse JSON response: ", e);
+                        // showMessage("Error: Invalid response format.");
+                    }
+                } else {
+                    console.error("Request failed: ", xhr.status);
+                    // showMessage("Error: " + xhr.statusText);
+                }
+            }
+        };
+        xhr.send(data);
+        //xhr.send(`action=${encodeURIComponent(action)}&${data}`);
+    }
+
     $(document).ready(function ()
     {
         // 读取现有的房间数据
@@ -305,6 +329,16 @@
             $("#appNamelist").append(optionsHtml);
         }
         addOption();
+
+        function getRooms() {
+            sendRequest('get', 'action=get', function(response) {
+                const rooms = response.data;
+                const roomList = rooms.map(room => `<option value="${room.room_id}">${room.room_name}</option>`).join('');
+                $("#appNamelist").append(roomList);
+            });
+        }
+        getRooms();
+
 
         $("#bid").focus();
         $("#bid").keydown(function (e)
