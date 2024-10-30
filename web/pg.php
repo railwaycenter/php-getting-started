@@ -141,6 +141,8 @@
             sendRequest('add', data, function(response) {
                 showMessage(response.message);
                 getRooms(); // Refresh room list
+                document.getElementById('room_id').value = '';
+                document.getElementById('room_name').value = '';
             });
         }
 
@@ -161,6 +163,9 @@
             sendRequest('update', data, function(response) {
                 showMessage(response.message);
                 getRooms(); // Refresh room list
+                document.getElementById('update_id').value = '';
+                document.getElementById('new_room_id').value = '';
+                document.getElementById('new_room_name').value = '';
             });
         }
 

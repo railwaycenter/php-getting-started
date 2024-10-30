@@ -96,7 +96,7 @@
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['tableName' => $tableName]);
         $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        return json_encode($columns); // 返回列名数组
+        return $columns; // 返回列名数组
     }
 
     // 删除列的函数
@@ -118,7 +118,7 @@
         $sql = "SELECT tablename FROM pg_tables WHERE schemaname = 'public'";
         $stmt = $pdo->query($sql);
         $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        return json_encode($tables);
+        return $tables;
     }
 
     // 处理请求
@@ -152,12 +152,12 @@
             $response = renameColumn($pdo, $oldColumnName, $newColumnName);
         } elseif ($action === 'get_columns') {
             $tableName = $_POST['table_name'];
-            $response = json_decode(getColumnNames($pdo, $tableName), true);
+            $response = getColumnNames($pdo, $tableName);
         } elseif ($action === 'drop_column') {
             $columnName = $_POST['column_name'];
             $response = dropColumn($pdo, $columnName);
         } elseif ($action === 'get_all_tables') {  // 新增操作
-            $response = json_decode(getAllTables($pdo), true);
+            $response = getAllTables($pdo);
         }
 
         echo json_encode($response); // 返回 JSON 格式响应
