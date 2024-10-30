@@ -66,9 +66,9 @@
 
     // 更新数据的函数
     function updateData($pdo, $id, $newRoomId, $newRoomName) {
-        $sql = "UPDATE roomData SET room_id = :newRoomId, room_name = :newRoomName WHERE room_id = :id";
+        $sql = "UPDATE roomData SET room_id = :newRoomId, room_name = :newRoomName WHERE id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(['newRoomId' => $newRoomId, 'newRoomName' => $newRoomName, 'room_id' => $id]);
+        $stmt->execute(['newRoomId' => $newRoomId, 'newRoomName' => $newRoomName, 'id' => $id]);
         return ["message" => "Room updated successfully."];
     }
 
