@@ -16,6 +16,23 @@
 
     <!-- Theme style -->
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/css/adminlte.min.css">
+
+    <style>
+        /* 自定义提示框样式 */
+        #message-box {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -38,6 +55,7 @@
             </datalist>
             <button class="btn btn-success" id="btnConfirm" type="submit">提交</button>
             <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank">虎牙直播地址</a>
+            <a href="pg.php" target="_blank">直播管理地址</a>
         </div>
     </div>
 
@@ -45,9 +63,19 @@
         <div class="col">
             <input type="text" name="roomId" id="roomId" placeholder="请输入虎牙id"/>
             <input type="text" name="roomName" id="roomName" placeholder="请输入虎牙房间名"/>
-            <button class="btn btn-success" id="btnSubmit" type="submit">保存</button>
+            <button class="btn btn-success" id="btnSubmit" type="submit">本地保存</button>
         </div>
     </div>
+
+    <div class="row">
+        <input type="text" id="room_id" required  placeholder="请输入虎牙id">
+        <input type="text" id="room_name" required  placeholder="请输入虎牙房间名">
+        <button id="save_button" >网络保存</button>
+    </div>
+
+    <!-- 自定义提示框 -->
+    <div id="message-box"></div>
+
     <?php
         date_default_timezone_set("Asia/Shanghai");
         $type = empty($_GET['type']) ? "nodisplay" : trim($_GET['type']);
@@ -286,6 +314,15 @@
         },
     });
 
+    // 定义显示消息的函数
+    function showMessage(message, duration = 3000) {
+        const messageBox = $("#message-box");
+        messageBox.text(message).fadeIn();
+
+        setTimeout(function () {
+            messageBox.fadeOut();
+        }, duration);
+    }
 
     $(document).ready(function ()
     {
@@ -312,7 +349,7 @@
             xhr.send(data);
             //xhr.send(`action=${encodeURIComponent(action)}&${data}`);
         }
-        
+
         // 读取现有的房间数据
         let roomData = JSON.parse(localStorage.getItem('roomData')) || {};
 
@@ -382,6 +419,24 @@
             $("#roomName").val('');
         });
 
+
+        function addRoom() {
+            const roomId = document.getElementById('room_id').value;
+            const roomName = document.getElementById('room_name').value;
+            const data = `action=add&room_id=${encodeURIComponent(roomId)}&room_name=${encodeURIComponent(roomName)}`;
+
+            sendRequest('add', data, function(response) {
+                // 使用自定义的消息提示框
+                showMessage(response.message || "房间信息已保存！");
+                //showMessage(response.message);
+                //getRooms(); // Refresh room list
+                document.getElementById('room_id').value = '';
+                document.getElementById('room_name').value = '';
+            });
+        }
+
+        // 为保存按钮绑定点击事件
+        $("#save_button").on("click", addRoom);
 
     });
 </script>
