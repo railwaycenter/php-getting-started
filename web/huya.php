@@ -68,9 +68,11 @@
     </div>
 
     <div class="row">
-        <input type="text" id="room_id" required  placeholder="请输入虎牙id">
-        <input type="text" id="room_name" required  placeholder="请输入虎牙房间名">
-        <button id="save_button" >网络保存</button>
+        <div class="col">
+            <input type="text" id="room_id" placeholder="请输入虎牙id">
+            <input type="text" id="room_name" placeholder="请输入虎牙房间名">
+            <button class="btn btn-success" id="save_button">网络保存</button>
+        </div>
     </div>
 
     <!-- 自定义提示框 -->
@@ -426,6 +428,7 @@
             const data = `action=add&room_id=${encodeURIComponent(roomId)}&room_name=${encodeURIComponent(roomName)}`;
 
             sendRequest('add', data, function(response) {
+                $("#appNamelist").append(`<option value="${roomId}">${roomName}</option>`);
                 // 使用自定义的消息提示框
                 showMessage(response.message || "房间信息已保存！");
                 //showMessage(response.message);

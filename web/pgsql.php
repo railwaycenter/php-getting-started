@@ -42,6 +42,25 @@
             return [message => "room_id and room_name should be strings"];
         }
 
+        // 提取 room_id 中的数字部分（无论它是纯数字还是 URL）
+        preg_match('/\d+/', $room_id, $matches);
+        $numeric_room_id = isset($matches[0]) ? $matches[0] : null; // 如果没有匹配到数字，则为 null
+
+        // 检查是否存在重复的 room_id 或 room_name
+        $checkSql = "SELECT COUNT(*) FROM roomData WHERE room_name = :room_name OR room_id = :room_id OR room_id = :numeric_room_id";
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute([
+            'room_id' => $room_id,
+            'room_name' => $room_name,
+            'numeric_room_id' => $numeric_room_id
+        ]);
+        $count = $checkStmt->fetchColumn();
+
+        if ($count > 0) {
+            return ["message" => "Duplicate room_id or room_name found. Room addition aborted."];
+        }
+
+        // 插入新记录
         $sql = "INSERT INTO roomData (room_id, room_name) VALUES (:room_id, :room_name)";
         $stmt = $pdo->prepare($sql);
         try
@@ -58,7 +77,7 @@
 
     // 获取数据的函数
     function getData($pdo) {
-        $sql = "SELECT * FROM roomData order by id desc";
+        $sql = "SELECT * FROM roomData order by id asc";
         $stmt = $pdo->query($sql);
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return ["data" => $rooms]; // 返回 JSON 格式的数组
