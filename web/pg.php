@@ -3,19 +3,33 @@
 
     // 定义访问密码
     define('ACCESS_PASSWORD', getenv('ACCESS_PASSWORD'));
+    define('MAX_ATTEMPTS', 5);
+
+    // 初始化尝试次数
+    if (!isset($_SESSION['attempts'])) {
+        $_SESSION['attempts'] = 0;
+    }
 
     // 检查是否已输入正确密码
     if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
-    // 处理用户提交的密码
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['password']) && $_POST['password'] === ACCESS_PASSWORD) {
-            $_SESSION['authenticated'] = true;
-            header('Location: ' . $_SERVER['PHP_SELF']);
-            exit;
-        } else {
-            $error = "Incorrect password. Please try again.";
+
+        // 检查尝试次数是否超过最大值
+        if ($_SESSION['attempts'] >= MAX_ATTEMPTS) {
+            die("You have exceeded the maximum number of attempts. Access denied.");
         }
-    }
+
+        // 处理用户提交的密码
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['password']) && $_POST['password'] === ACCESS_PASSWORD) {
+                $_SESSION['authenticated'] = true;
+                $_SESSION['attempts'] = 0; // 成功后重置尝试次数
+                header('Location: ' . $_SERVER['PHP_SELF']);
+                exit;
+            } else {
+                $_SESSION['attempts']++;
+                $error = "Incorrect password. Please try again.";
+            }
+        }
     // 如果密码不正确或未提交密码，显示密码输入表单
 ?>
 <!DOCTYPE html>
