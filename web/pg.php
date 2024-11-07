@@ -1,3 +1,48 @@
+<?php
+    session_start();
+
+    // 定义访问密码
+    define('ACCESS_PASSWORD', getenv('ACCESS_PASSWORD'));
+
+    // 检查是否已输入正确密码
+    if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    // 处理用户提交的密码
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['password']) && $_POST['password'] === ACCESS_PASSWORD) {
+            $_SESSION['authenticated'] = true;
+            header('Location: ' . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            $error = "Incorrect password. Please try again.";
+        }
+    }
+    // 如果密码不正确或未提交密码，显示密码输入表单
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Enter Password</title>
+</head>
+<body>
+<h2>Please enter the password to access this page</h2>
+<?php if (isset($error)) : ?>
+    <p style="color: red;"><?= htmlspecialchars($error) ?></p>
+<?php endif; ?>
+<form method="post">
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
+<?php
+    exit;
+    }
+
+    // 如果已通过验证，则继续显示页面内容
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
