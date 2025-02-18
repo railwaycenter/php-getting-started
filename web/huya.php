@@ -43,16 +43,16 @@
     </div>
     <div class="row ">
         <div class="col">
-            <input type="text" name="bid" id="bid" list="appNamelist" placeholder="请输入虎牙id"/>
-            <datalist id="appNamelist">
-                <option value="859042">正恒-紫宸【相声木兰】</option>
-                <option value="330679">怀逝【李白导师】</option>
-                <option value="391946">小炎【妲己的神】</option>
-                <option value="691346">宇晨【马可导师】</option>
-                <option value="825912">念青【嘴强王者】</option>
-                <option value="651353">久爱-猪猪小悠</option>
-
-            </datalist>
+            <input type="search" name="bid" id="bid" list="appNamelist" placeholder="请输入虎牙id"/>
+<!--            <datalist id="appNamelist">-->
+<!--                <option value="859042">正恒-紫宸【相声木兰】</option>-->
+<!--                <option value="330679">怀逝【李白导师】</option>-->
+<!--                <option value="391946">小炎【妲己的神】</option>-->
+<!--                <option value="691346">宇晨【马可导师】</option>-->
+<!--                <option value="825912">念青【嘴强王者】</option>-->
+<!--                <option value="651353">久爱-猪猪小悠</option>-->
+<!---->
+<!--            </datalist>-->
             <button class="btn btn-success" id="btnConfirm" type="submit">提交</button>
             <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank">虎牙直播地址</a>
             <a href="pg.php" target="_blank">直播管理地址</a>
@@ -302,6 +302,8 @@
 <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/echarts/4.8.0/echarts.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-switch@3.4.0/dist/js/bootstrap-switch.min.js"></script>-->
 
+<script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-y/tarekraafat-autocomplete.js/10.2.6/autoComplete.min.js"></script>
+
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/hls.js/1.1.5/hls.min.js"></script>
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/flv.js/1.6.2/flv.min.js"></script>
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/dplayer/1.26.0/DPlayer.min.js"></script>
@@ -314,6 +316,59 @@
             //url:'https://api.dogecloud.com/player/get.m3u8?vcode=5ac682e6f8231991&userId=17&ext=.m3u8',
             type: 'auto',
         },
+    });
+
+    let newdata = ["859042<br>正恒-紫宸【相声木兰】",
+        "330679<br>怀逝【李白导师】",
+        "391946<br>小炎【妲己的神】",
+        "691346<br>宇晨【马可导师】",
+        "825912<br>念青【嘴强王者】"
+        ];
+
+
+    const autoCompleteJS = new autoComplete({
+        selector: "#bid",
+        placeHolder: "",
+        threshold: 0,
+
+        data: {
+            src: newdata,
+            cache: true,
+        },
+        resultsList: {
+            element: (list, data) => {
+                if (!data.results.length) {
+                    // Create "No Results" message element
+                    const message = document.createElement("div");
+                    // Add class to the created element
+                    message.setAttribute("class", "no_result");
+                    // Add message text content
+                    message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+                    // Append message element to the results list
+                    list.prepend(message);
+                }
+            },
+            noResults: true,
+            maxResults: undefined,
+        },
+        resultItem: {
+            highlight: true
+        },
+        events: {
+            input: {
+                selection: (event) => {
+                    const selection = event.detail.selection.value;
+                    autoCompleteJS.input.value = selection.split('<br>')[0];
+                },
+                focus: (event) => {
+                    // console.log("Input Field in focus!");
+                    // const inputValue = autoCompleteJS.input.value;
+                    //
+                    // if (inputValue.length) autoCompleteJS.start();
+                    autoCompleteJS.start();
+                }
+            }
+        }
     });
 
     // 定义显示消息的函数
@@ -359,14 +414,18 @@
         {
             // 遍历 roomData 并生成 <option> 元素
             let optionsHtml = '';
+            let autoCompleteData = '';
             for (let roomNumber in roomData)
             {
                 if (roomData.hasOwnProperty(roomNumber))
                 {
                     optionsHtml += `<option value="${roomNumber}">${roomData[roomNumber]}</option>`;
-                }
+                    autoCompleteData += `${roomNumber}<br>${roomData[roomNumber]}`
+                };
             }
-            $("#appNamelist").append(optionsHtml);
+            // $("#appNamelist").append(optionsHtml);
+            newdata = [...newdata, ...autoCompleteData];
+            autoCompleteJS.data.src = newdata;
         }
         addOption();
 
@@ -374,7 +433,11 @@
             sendRequest('get', 'action=get', function(response) {
                 const rooms = response.data;
                 const roomList = rooms.map(room => `<option value="${room.room_id}">${room.room_name}</option>`).join('');
-                $("#appNamelist").append(roomList);
+                const autoCompleteData = rooms.map(room => `${roomNumber}<br>${roomData[roomNumber]}`).join('');
+
+                newdata = [...newdata, ...autoCompleteData];
+                autoCompleteJS.data.src = newdata;
+                // $("#appNamelist").append(roomList);
             });
         }
         getRooms();
@@ -415,7 +478,9 @@
             // 结果可能是：{101: 'Conference Room A', 102: 'Updated Conference Room B', 201: 'Meeting Room 1', 301: 'New Conference Room'}
 
             let tempOptionsHtml = `<option value="${$("#roomId").val()}">${$("#roomName").val()}</option>`;
-            $("#appNamelist").append(tempOptionsHtml);
+            // $("#appNamelist").append(tempOptionsHtml);
+            newdata.push(`${$("#roomId").val()}<br>${$("#roomName").val()}`);
+            autoCompleteJS.data.src = newdata;
 
             $("#roomId").val('');
             $("#roomName").val('');
@@ -428,7 +493,8 @@
             const data = `action=add&room_id=${encodeURIComponent(roomId)}&room_name=${encodeURIComponent(roomName)}`;
 
             sendRequest('add', data, function(response) {
-                $("#appNamelist").append(`<option value="${roomId}">${roomName}</option>`);
+                // $("#appNamelist").append(`<option value="${roomId}">${roomName}</option>`);
+                newdata.push(`${roomId}<br>${roomName}`);
                 // 使用自定义的消息提示框
                 showMessage(response.message || "房间信息已保存！");
                 //showMessage(response.message);
