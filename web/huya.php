@@ -327,6 +327,8 @@
         "691346<br>宇晨【马可导师】",
         "825912<br>念青【嘴强王者】"];
 
+    console.log(newdata)
+
 
     const autoCompleteJS = new autoComplete({
         selector: "#bid",
@@ -422,12 +424,13 @@
                 if (roomData.hasOwnProperty(roomNumber))
                 {
                     optionsHtml += `<option value="${roomNumber}">${roomData[roomNumber]}</option>`;
-                    autoCompleteData += `${roomNumber}<br>${roomData[roomNumber]}`
+                    // autoCompleteData += `${roomNumber}<br>${roomData[roomNumber]}`
+                    newdata.push(`${roomNumber}<br>${roomData[roomNumber]}`);
                 };
             }
             // $("#appNamelist").append(optionsHtml);
             // newdata = [...newdata, ...autoCompleteData];
-            newdata.push(autoCompleteData);
+            // newdata.push(autoCompleteData);
             autoCompleteJS.data.src = newdata;
         }
         addOption();
