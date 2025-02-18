@@ -337,7 +337,7 @@
 
         data: {
             src: newdata,
-            cache: true,
+            cache: false,
         },
         resultsList: {
             element: (list, data) => {
