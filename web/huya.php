@@ -16,6 +16,9 @@
 
     <!-- Theme style -->
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/tarekraafat-autocomplete.js/10.2.6/css/autoComplete.min.css">
+
+
 
     <style>
         /* 自定义提示框样式 */
@@ -302,7 +305,7 @@
 <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/echarts/4.8.0/echarts.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-switch@3.4.0/dist/js/bootstrap-switch.min.js"></script>-->
 
-<script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-y/tarekraafat-autocomplete.js/10.2.6/autoComplete.min.js"></script>
+<script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/tarekraafat-autocomplete.js/10.2.6/autoComplete.min.js"></script>
 
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/hls.js/1.1.5/hls.min.js"></script>
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/flv.js/1.6.2/flv.min.js"></script>
@@ -433,7 +436,7 @@
             sendRequest('get', 'action=get', function(response) {
                 const rooms = response.data;
                 const roomList = rooms.map(room => `<option value="${room.room_id}">${room.room_name}</option>`).join('');
-                const autoCompleteData = rooms.map(room => `${roomNumber}<br>${roomData[roomNumber]}`).join('');
+                const autoCompleteData = rooms.map(room => `${room.room_id}<br>${room.room_name}`).join('');
 
                 newdata = [...newdata, ...autoCompleteData];
                 autoCompleteJS.data.src = newdata;
