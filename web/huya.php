@@ -436,11 +436,12 @@
         function getRooms() {
             sendRequest('get', 'action=get', function(response) {
                 const rooms = response.data;
+                console.log(rooms)
                 const roomList = rooms.map(room => `<option value="${room.room_id}">${room.room_name}</option>`).join('');
-                const autoCompleteData = rooms.map(room => `${room.room_id}<br>${room.room_name}`).join('');
+                const autoCompleteData = rooms.map(room => `${room.room_id}<br>${room.room_name}`);
                 console.log(autoCompleteData)
-                // newdata = [...newdata, ...autoCompleteData];
-                newdata.push(autoCompleteData);
+                newdata = [...newdata, ...autoCompleteData];
+                // newdata.push(autoCompleteData);
                 autoCompleteJS.data.src = newdata;
                 // $("#appNamelist").append(roomList);
             });
