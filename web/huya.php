@@ -427,7 +427,8 @@
                 };
             }
             // $("#appNamelist").append(optionsHtml);
-            newdata = [...newdata, ...autoCompleteData];
+            // newdata = [...newdata, ...autoCompleteData];
+            newdata.push(autoCompleteData);
             autoCompleteJS.data.src = newdata;
         }
         addOption();
@@ -437,8 +438,9 @@
                 const rooms = response.data;
                 const roomList = rooms.map(room => `<option value="${room.room_id}">${room.room_name}</option>`).join('');
                 const autoCompleteData = rooms.map(room => `${room.room_id}<br>${room.room_name}`).join('');
-
-                newdata = [...newdata, ...autoCompleteData];
+                console.log(autoCompleteData)
+                // newdata = [...newdata, ...autoCompleteData];
+                newdata.push(autoCompleteData);
                 autoCompleteJS.data.src = newdata;
                 // $("#appNamelist").append(roomList);
             });
