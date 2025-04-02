@@ -494,7 +494,7 @@
         }
         getRooms();
 
-        $("#bid").focus();
+        // $("#bid").focus();
         $("#bid").keydown(function(e) {
             if (e.keyCode === 13)
             {
