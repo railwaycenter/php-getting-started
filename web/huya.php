@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -27,65 +27,82 @@
             padding: 15px;
             background-color: #4CAF50;
             color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
             z-index: 1000;
             max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* 美化整体布局 */
-        body {
-            background: linear-gradient(135deg, #e0eafc, #cfdef3); /* 渐变背景 */
-            min-height: 100vh;
+        /* 加载动画 */
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* 现代化设计 */
+        body {
+            background: linear-gradient(120deg, #1e3c72, #2a5298); /* 深蓝色渐变 */
+            color: #333;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px 0;
         }
 
         .container {
-            max-width: 1200px; /* 限制最大宽度，适合电脑端 */
+            max-width: 1200px;
             margin: 0 auto;
+            position: relative; /* 确保容器内的元素可以相对定位 */
         }
 
-        /* 卡片样式 */
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* 添加阴影 */
-            margin-bottom: 20px;
-            background-color: #fff;
-        }
-
-        .card-header {
-            background-color: #6a82fb; /* 卡片头部渐变色 */
-            color: white;
-            border-radius: 15px 15px 0 0;
-            padding: 15px;
-            font-size: 1.2em;
-        }
-
-        .card-body {
+        .section {
+            background: #fff;
+            border-radius: 12px;
             padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 5px;
         }
 
         #dplayer {
             width: 100%;
-            max-height: 60vh; /* 电脑端适当增加高度 */
-            border-radius: 10px;
+            max-height: 60vh;
+            border-radius: 8px;
             overflow: hidden;
+            position: relative; /* 确保播放器不会完全覆盖其他内容 */
+            z-index: 1; /* 默认层级低于提示框和加载动画 */
         }
 
         .input-group {
             margin-bottom: 15px;
         }
 
-        .btn {
-            border-radius: 25px; /* 圆角按钮 */
-            padding: 8px 20px;
-            transition: all 0.3s ease; /* 按钮动画 */
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .btn:hover {
-            transform: translateY(-2px); /* 悬停时轻微上移 */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: background-color 0.3s ease; /* 仅保留颜色过渡 */
         }
 
         .btn-success {
@@ -99,109 +116,97 @@
         }
 
         a.btn {
-            display: inline-block;
-            text-align: center;
             text-decoration: none;
-            width: 100%; /* 手机端全宽 */
+            display: inline-block;
+            width: 100%;
         }
 
-        /* 响应式调整 */
-        @media (min-width: 768px) {
-            .container {
-                padding: 0 20px;
+        /* 响应式设计 */
+        @media (max-width: 767px) {
+            .input-group {
+                flex-direction: column;
+            }
+
+            .input-group .form-control,
+            .input-group .btn {
+                width: 100%;
+                margin-bottom: 10px;
             }
 
             .btn {
-                width: auto; /* 桌面端按钮恢复正常宽度 */
+                margin-left: 0;
+            }
+
+            #dplayer {
+                max-height: 40vh; /* 手机端减小高度 */
+            }
+        }
+
+        @media (min-width: 768px) {
+            a.btn {
+                width: auto;
                 margin-left: 10px;
             }
 
-            .row {
-                display: flex;
-                justify-content: center;
-            }
-
-            .col {
-                max-width: 600px; /* 限制输入区域宽度 */
+            .section {
+                padding: 30px;
             }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">直播播放器</div>
-                <div class="card-body">
-                    <div id="dplayer"></div>
-                </div>
+    <div class="section">
+        <h2 class="section-title">直播播放器</h2>
+        <div id="dplayer"></div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">直播控制</h2>
+        <div class="input-group">
+            <input type="search" name="bid" id="bid" list="appNamelist" class="form-control" placeholder="请输入虎牙id"/>
+<!--            <datalist id="appNamelist">-->
+<!--                <option value="859042">正恒-紫宸【相声木兰】</option>-->
+<!--                <option value="330679">怀逝【李白导师】</option>-->
+<!--                <option value="391946">小炎【妲己的神】</option>-->
+<!--                <option value="691346">宇晨【马可导师】</option>-->
+<!--                <option value="825912">念青【嘴强王者】</option>-->
+<!--                <option value="651353">久爱-猪猪小悠</option>-->
+<!--            </datalist>-->
+            <div class="input-group-append">
+                <button class="btn btn-success" id="btnConfirm" type="button">提交</button>
+            </div>
+        </div>
+        <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-info">虎牙直播地址</a>
+        <a href="pg.php" target="_blank" class="btn btn-info">直播管理地址</a>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">本地保存房间</h2>
+        <div class="input-group">
+            <input type="text" name="roomId" id="roomId" class="form-control" placeholder="请输入虎牙id"/>
+            <input type="text" name="roomName" id="roomName" class="form-control" placeholder="请输入虎牙房间名"/>
+            <div class="input-group-append">
+                <button class="btn btn-success" id="btnSubmit" type="button">本地保存</button>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">直播控制</div>
-                <div class="card-body">
-                    <div class="input-group">
-                        <input type="search" name="bid" id="bid" list="appNamelist" class="form-control" placeholder="请输入虎牙id"/>
-<!--                        <datalist id="appNamelist">-->
-<!--                            <option value="859042">正恒-紫宸【相声木兰】</option>-->
-<!--                            <option value="330679">怀逝【李白导师】</option>-->
-<!--                            <option value="391946">小炎【妲己的神】</option>-->
-<!--                            <option value="691346">宇晨【马可导师】</option>-->
-<!--                            <option value="825912">念青【嘴强王者】</option>-->
-<!--                            <option value="651353">久爱-猪猪小悠</option>-->
-<!--                        </datalist>-->
-                        <div class="input-group-append">
-                            <button class="btn btn-success" id="btnConfirm" type="button">提交</button>
-                        </div>
-                    </div>
-                    <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-info">虎牙直播地址</a>
-                    <a href="pg.php" target="_blank" class="btn btn-info">直播管理地址</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">本地保存房间</div>
-                <div class="card-body">
-                    <div class="input-group">
-                        <input type="text" name="roomId" id="roomId" class="form-control" placeholder="请输入虎牙id"/>
-                        <input type="text" name="roomName" id="roomName" class="form-control" placeholder="请输入虎牙房间名"/>
-                        <div class="input-group-append">
-                            <button class="btn btn-success" id="btnSubmit" type="button">本地保存</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">网络保存房间</div>
-                <div class="card-body">
-                    <div class="input-group">
-                        <input type="text" id="room_id" class="form-control" placeholder="请输入虎牙id">
-                        <input type="text" id="room_name" class="form-control" placeholder="请输入虎牙房间名">
-                        <div class="input-group-append">
-                            <button class="btn btn-success" id="save_button" type="button">网络保存</button>
-                        </div>
-                    </div>
-                </div>
+    <div class="section">
+        <h2 class="section-title">网络保存房间</h2>
+        <div class="input-group">
+            <input type="text" id="room_id" class="form-control" placeholder="请输入虎牙id">
+            <input type="text" id="room_name" class="form-control" placeholder="请输入虎牙房间名">
+            <div class="input-group-append">
+                <button class="btn btn-success" id="save_button" type="button">网络保存</button>
             </div>
         </div>
     </div>
 
     <!-- 自定义提示框 -->
     <div id="message-box"></div>
+    <!-- 加载动画 -->
+    <div id="loading"><i class="fas fa-spinner fa-spin"></i> 加载中...</div>
 
     <?php
         date_default_timezone_set("Asia/Shanghai");
@@ -389,13 +394,13 @@
                 }
             }
             //header('location:' . $mediaurl);
-            echo($mediaurl);
+            echo json_encode(['url' => $mediaurl]); // 修改为 JSON 输出
             // exit();
         }
         else
         {
             //header('location:' . $mediaurl);
-            echo($mediaurl);
+            echo json_encode(['url' => $mediaurl]); // 修改为 JSON 输出
             // exit();
         }
         $firstUrl = $mediaurl;
@@ -434,11 +439,20 @@
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),
         live: true,
+        hotkey: true, // 启用快捷键（如 Esc 退出全屏）
         video: {
             url: '<?php echo $firstUrl?>',
             //url:'https://api.dogecloud.com/player/get.m3u8?vcode=5ac682e6f8231991&userId=17&ext=.m3u8',
             type: 'auto',
         },
+        contextmenu: [ // 添加右键菜单
+            {
+                text: '退出全屏',
+                click: (player) => {
+                    player.fullScreen.cancel('browser'); // 退出浏览器全屏
+                },
+            },
+        ],
     });
 
     let newdata = ["859042<br>正恒-紫宸【相声木兰】",
@@ -504,14 +518,21 @@
         }, duration);
     }
 
+    // 显示/隐藏加载动画
+    function toggleLoading(show) {
+        $("#loading").css("display", show ? "block" : "none");
+    }
+
     // AJAX 获取播放地址
     function fetchStreamUrl(roomId) {
+        toggleLoading(true);
         $.ajax({
             url: window.location.pathname,
             method: 'GET',
             data: { id: roomId },
+            dataType: 'json', // 期望 JSON 响应
             success: function(response) {
-                const url = response.trim();
+                const url = response.url;
                 if (url) {
                     dp.switchVideo({ url: url, type: 'auto' });
                     showMessage("播放地址已更新");
@@ -519,8 +540,11 @@
                     showMessage("未获取到有效播放地址");
                 }
             },
-            error: function() {
-                showMessage("请求播放地址失败");
+            error: function(xhr) {
+                showMessage("请求播放地址失败: " + xhr.statusText);
+            },
+            complete: function() {
+                toggleLoading(false);
             }
         });
     }
