@@ -9,16 +9,12 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/font-awesome/6.0.0/css/all.min.css">
-
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/bootstrap/4.6.1/css/bootstrap.min.css">
     <!-- DataTables -->
     <link rel="stylesheet" href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
-
     <!-- Theme style -->
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/css/adminlte.min.css">
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/tarekraafat-autocomplete.js/10.2.6/css/autoComplete.min.css">
-
-
 
     <style>
         /* 自定义提示框样式 */
@@ -34,6 +30,45 @@
             border-radius: 5px;
             font-size: 16px;
             z-index: 1000;
+            max-width: 90%;
+        }
+
+        /* 优化手机端显示 */
+        body {
+            padding: 10px;
+            background-color: #f4f6f9;
+        }
+
+        .container {
+            max-width: 100%;
+        }
+
+        #dplayer {
+            width: 100%;
+            max-height: 50vh;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        a.btn {
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        @media (min-width: 768px) {
+            .btn {
+                width: auto;
+                margin-left: 10px;
+            }
         }
     </style>
 </head>
@@ -44,37 +79,50 @@
             <div id="dplayer"></div>
         </div>
     </div>
-    <div class="row ">
-        <div class="col">
-            <input type="search" name="bid" id="bid" list="appNamelist" placeholder="请输入虎牙id"/>
-<!--            <datalist id="appNamelist">-->
-<!--                <option value="859042">正恒-紫宸【相声木兰】</option>-->
-<!--                <option value="330679">怀逝【李白导师】</option>-->
-<!--                <option value="391946">小炎【妲己的神】</option>-->
-<!--                <option value="691346">宇晨【马可导师】</option>-->
-<!--                <option value="825912">念青【嘴强王者】</option>-->
-<!--                <option value="651353">久爱-猪猪小悠</option>-->
-<!---->
-<!--            </datalist>-->
-            <button class="btn btn-success" id="btnConfirm" type="submit">提交</button>
-            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank">虎牙直播地址</a>
-            <a href="pg.php" target="_blank">直播管理地址</a>
-        </div>
-    </div>
 
-    <div class="row ">
+    <div class="row">
         <div class="col">
-            <input type="text" name="roomId" id="roomId" placeholder="请输入虎牙id"/>
-            <input type="text" name="roomName" id="roomName" placeholder="请输入虎牙房间名"/>
-            <button class="btn btn-success" id="btnSubmit" type="submit">本地保存</button>
+            <div class="input-group">
+                <input type="search" name="bid" id="bid" list="appNamelist" class="form-control" placeholder="请输入虎牙ID">
+                <!--            <datalist id="appNamelist">-->
+                <!--                <option value="859042">正恒-紫宸【相声木兰】</option>-->
+                <!--                <option value="330679">怀逝【李白导师】</option>-->
+                <!--                <option value="391946">小炎【妲己的神】</option>-->
+                <!--                <option value="691346">宇晨【马可导师】</option>-->
+                <!--                <option value="825912">念青【嘴强王者】</option>-->
+                <!--                <option value="651353">久爱-猪猪小悠</option>-->
+                <!---->
+                <!--            </datalist>-->
+                <div class="input-group-append">
+                    <button class="btn btn-success" id="btnConfirm" type="button">提交</button>
+                </div>
+            </div>
+            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-info">虎牙直播地址</a>
+            <a href="pg.php" target="_blank" class="btn btn-info">直播管理地址</a>
         </div>
     </div>
 
     <div class="row">
         <div class="col">
-            <input type="text" id="room_id" placeholder="请输入虎牙id">
-            <input type="text" id="room_name" placeholder="请输入虎牙房间名">
-            <button class="btn btn-success" id="save_button">网络保存</button>
+            <div class="input-group">
+                <input type="text" name="roomId" id="roomId" class="form-control" placeholder="请输入虎牙ID">
+                <input type="text" name="roomName" id="roomName" class="form-control" placeholder="请输入虎牙房间名">
+                <div class="input-group-append">
+                    <button class="btn btn-success" id="btnSubmit" type="button">本地保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="input-group">
+                <input type="text" id="room_id" class="form-control" placeholder="请输入虎牙ID">
+                <input type="text" id="room_name" class="form-control" placeholder="请输入虎牙房间名">
+                <div class="input-group-append">
+                    <button class="btn btn-success" id="save_button" type="button">网络保存</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -104,7 +152,6 @@
         $media = empty($_GET['media']) ? "flv" : trim($_GET['media']);
         $roomurl = "https://mp.huya.com/cache.php?m=Live&do=profileRoom&roomid=" . $id;
 
-
         function get_content($apiurl, $flag)
         {
             if ($flag == "mobile")
@@ -121,7 +168,7 @@
                     "byPass" => 3,
                     "context" => "",
                     "version" => "2.4",
-                    "data" => new stdClass(),
+                    "data" => new stdClass (),
                 ];
                 $postData = json_encode($arr);
                 $headers = array(
@@ -160,7 +207,6 @@
         $key = "abcdefghijklmnopqrstuvwxyz123456";
         $iv = "1234567890123456";
         $mediaurl = aes_decrypt("fIuPMpBI1RpRnM2JhbYHzvwCvwhHBF7Q+8k14m9h3N5ZfubHcDCEk08TnLwHoMI/SG7bxpqT6Rh+gZunSpYHf1JM/RmEC/S1SjRYWw6rwc3gGo3Rrsl3sojPujI2aZsb", $key, $iv);
-
 
         function get_uuid()
         {
@@ -289,8 +335,8 @@
   }
 })();</script>");
     ?>
-
 </div>
+
 <!-- jQuery -->
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/??jquery/3.5.1/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
@@ -304,37 +350,41 @@
 <!-- 引入 ECharts 文件 -->
 <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/echarts/4.8.0/echarts.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-switch@3.4.0/dist/js/bootstrap-switch.min.js"></script>-->
-
+<!-- AutoComplete -->
 <script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/tarekraafat-autocomplete.js/10.2.6/autoComplete.min.js"></script>
-
+<!-- Player Libraries -->
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/hls.js/1.1.5/hls.min.js"></script>
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/flv.js/1.6.2/flv.min.js"></script>
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/dplayer/1.26.0/DPlayer.min.js"></script>
+
 <script>
-    const dp = new DPlayer({
+    // 初始化 DPlayer
+    let dp = new DPlayer({
         container: document.getElementById('dplayer'),
         live: true,
         video: {
-            url: '<?php echo $firstUrl?>',
+            url: '<?php echo $firstUrl?>', // 使用 PHP 生成的初始播放地址
             //url:'https://api.dogecloud.com/player/get.m3u8?vcode=5ac682e6f8231991&userId=17&ext=.m3u8',
             type: 'auto',
         },
     });
 
-    let newdata = ["859042<br>正恒-紫宸【相声木兰】",
+    // 初始房间数据
+    let newdata = [
+        "859042<br>正恒-紫宸【相声木兰】",
         "330679<br>怀逝【李白导师】",
         "391946<br>小炎【妲己的神】",
         "691346<br>宇晨【马可导师】",
-        "825912<br>念青【嘴强王者】"];
+        "825912<br>念青【嘴强王者】"
+    ];
 
     // console.log(newdata)
 
-
+    // 自动补全配置
     const autoCompleteJS = new autoComplete({
         selector: "#bid",
         placeHolder: "",
         threshold: 0,
-
         data: {
             src: newdata,
             cache: false,
@@ -347,7 +397,7 @@
                     // Add class to the created element
                     message.setAttribute("class", "no_result");
                     // Add message text content
-                    message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+                    message.innerHTML = `<span>未找到 "${data.query}" 的结果</span>`;
                     // Append message element to the results list
                     list.prepend(message);
                 }
@@ -379,43 +429,36 @@
     function showMessage(message, duration = 3000) {
         const messageBox = $("#message-box");
         messageBox.text(message).fadeIn();
-
-        setTimeout(function () {
-            messageBox.fadeOut();
-        }, duration);
+        setTimeout(() => messageBox.fadeOut(), duration);
     }
 
-    $(document).ready(function ()
-    {
-        function sendRequest(action, data, callback) {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'pgsql.php', true);  // 确保文件名正确
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        try {
-                            const jsonResponse = JSON.parse(xhr.responseText); // 尝试解析 JSON
-                            callback(jsonResponse);
-                        } catch (e) {
-                            console.error("Failed to parse JSON response: ", e);
-                            // showMessage("Error: Invalid response format.");
-                        }
-                    } else {
-                        console.error("Request failed: ", xhr.status);
-                        // showMessage("Error: " + xhr.statusText);
-                    }
+    // AJAX 请求函数
+    function fetchStreamUrl(roomId) {
+        $.ajax({
+            url: window.location.pathname,
+            method: 'GET',
+            data: { id: roomId },
+            success: function(response) {
+                const url = response.trim();
+                if (url) {
+                    dp.switchVideo({ url: url, type: 'auto' });
+                    showMessage("播放地址已更新");
+                } else {
+                    showMessage("未获取到有效播放地址");
                 }
-            };
-            xhr.send(data);
-            //xhr.send(`action=${encodeURIComponent(action)}&${data}`);
-        }
+            },
+            error: function() {
+                showMessage("请求播放地址失败");
+            }
+        });
+    }
 
+    $(document).ready(function() {
         // 读取现有的房间数据
         let roomData = JSON.parse(localStorage.getItem('roomData')) || {};
 
-        function addOption()
-        {
+        // 添加本地房间选项
+        function addLocalOptions() {
             // 遍历 roomData 并生成 <option> 元素
             let optionsHtml = '';
             let autoCompleteData = '';
@@ -433,11 +476,12 @@
             // newdata.push(autoCompleteData);
             autoCompleteJS.data.src = newdata;
         }
-        addOption();
+        addLocalOptions();
 
+        // 获取网络房间数据
         function getRooms() {
-            sendRequest('get', 'action=get', function(response) {
-                const rooms = response.data;
+            $.get('pgsql.php', { action: 'get' }, function(response) {
+                const rooms = response.data || [];
                 // console.log(rooms)
                 const roomList = rooms.map(room => `<option value="${room.room_id}">${room.room_name}</option>`).join('');
                 const autoCompleteData = rooms.map(room => `${room.room_id}<br>${room.room_name}`);
@@ -446,37 +490,37 @@
                 // newdata.push(autoCompleteData);
                 autoCompleteJS.data.src = newdata;
                 // $("#appNamelist").append(roomList);
-            });
+            }, 'json');
         }
         getRooms();
 
-
         $("#bid").focus();
-        $("#bid").keydown(function (e)
-        {
-            if (e.keyCode == 13)
+        $("#bid").keydown(function(e) {
+            if (e.keyCode === 13)
             {
                 $('#btnConfirm').trigger("click");
             }
         });
 
-        $("#btnConfirm").click(function ()
-        {
+        // 提交按钮事件
+        $("#btnConfirm").click(function() {
             // console.log('$("#bid").val()');
             console.log($("#bid").val());
-            window.location.replace(window.location.protocol + "//" + window.location.host + window.location.pathname + "?id=" + $("#bid").val())
-            //alert(window.location.href + "?id=" + $("#bid").val());
-            //alert(window.location.host);
+            const roomId = $("#bid").val();
+            if (roomId) {
+                fetchStreamUrl(roomId);
+            } else {
+                showMessage("请输入有效的虎牙ID");
+            }
         });
 
-        //保存数据
-        $("#btnSubmit").click(function ()
-        {
-            console.log($("#roomId").val());
-            console.log($("#roomName").val());
-
+        // 本地保存
+        $("#btnSubmit").click(function() {
+            const roomId = $("#roomId").val();
+            const roomName = $("#roomName").val();
+            if (roomId && roomName) {
             // 添加新的房间号-房间名对
-            roomData[$("#roomId").val()] = $("#roomName").val();
+                roomData[roomId] = roomName;
 
             // 将更新后的对象存储回 LocalStorage
             localStorage.setItem('roomData', JSON.stringify(roomData));
@@ -487,34 +531,38 @@
 
             let tempOptionsHtml = `<option value="${$("#roomId").val()}">${$("#roomName").val()}</option>`;
             // $("#appNamelist").append(tempOptionsHtml);
-            newdata.push(`${$("#roomId").val()}<br>${$("#roomName").val()}`);
+                newdata.push(`${roomId}<br>${roomName}`);
             autoCompleteJS.data.src = newdata;
 
             $("#roomId").val('');
             $("#roomName").val('');
+            showMessage("已保存到本地");
+            } else {
+                showMessage("请输入完整的房间信息");
+            }
         });
 
-
-        function addRoom() {
-            const roomId = document.getElementById('room_id').value;
-            const roomName = document.getElementById('room_name').value;
-            const data = `action=add&room_id=${encodeURIComponent(roomId)}&room_name=${encodeURIComponent(roomName)}`;
-
-            sendRequest('add', data, function(response) {
-                // $("#appNamelist").append(`<option value="${roomId}">${roomName}</option>`);
-                newdata.push(`${roomId}<br>${roomName}`);
-                // 使用自定义的消息提示框
-                showMessage(response.message || "房间信息已保存！");
-                //showMessage(response.message);
-                //getRooms(); // Refresh room list
-                document.getElementById('room_id').value = '';
-                document.getElementById('room_name').value = '';
-            });
-        }
-
-        // 为保存按钮绑定点击事件
-        $("#save_button").on("click", addRoom);
-
+        // 网络保存
+        $("#save_button").click(function() {
+            const roomId = $("#room_id").val();
+            const roomName = $("#room_name").val();
+            if (roomId && roomName) {
+                $.post('pgsql.php', {
+                    action: 'add',
+                    room_id: roomId,
+                    room_name: roomName
+                }, function(response) {
+                    // $("#appNamelist").append(`<option value="${roomId}">${roomName}</option>`);
+                    newdata.push(`${roomId}<br>${roomName}`);
+                    autoCompleteJS.data.src = newdata;
+                    $("#room_id").val('');
+                    $("#room_name").val('');
+                    showMessage(response.message || "已保存到网络");
+                }, 'json');
+            } else {
+                showMessage("请输入完整的房间信息");
+            }
+        });
     });
 </script>
 </body>
