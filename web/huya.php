@@ -86,6 +86,19 @@
             white-space: nowrap; /* 防止按钮文本换行 */
         }
 
+        /* 最近播放按钮样式 */
+        .recent-play-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* 按钮之间的间距 */
+        }
+
+        .recent-play-buttons .btn {
+            font-size: 0.9rem;
+            padding: 0.375rem 0.75rem;
+            white-space: nowrap;
+        }
+
         /* 自动补全列表样式 */
         .autoComplete_wrapper {
             position: relative; /* 确保定位上下文 */
@@ -176,10 +189,18 @@
             #bid {
                 width: 100%; /* 强制输入框宽度占满容器 */
             }
+            /* 最近播放按钮小屏调整 */
+            .recent-play-buttons {
+                flex-direction: column; /* 小屏时垂直排列 */
+                gap: 8px; /* 减小间距 */
+            }
+            .recent-play-buttons .btn {
+                width: 100%; /* 小屏时按钮占满宽度 */
+            }
         }
 
-
-        @media (min-width: 768px) and (max-width: 992px) {
+        /* 769px 到 991px 调整 */
+        @media (min-width: 769px) and (max-width: 991px) {
             /* 调整主输入区域的布局 */
             .form-row.align-items-center {
                 flex-wrap: wrap; /* 允许换行 */
@@ -218,6 +239,15 @@
             }
             .btn-link-custom:last-child {
                 margin-right: 0; /* 最后一个链接按钮无右间距 */
+            }
+            /* 最近播放按钮调整 */
+            .recent-play-buttons {
+                flex-wrap: wrap; /* 允许换行 */
+                gap: 8px;
+            }
+            .recent-play-buttons .btn {
+                flex: 1 1 auto; /* 弹性分配宽度 */
+                min-width: 120px; /* 最小宽度 */
             }
         }
     </style>
@@ -276,6 +306,22 @@
                             <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-outline-primary btn-link-custom mr-2">虎牙直播地址</a>
                             <a href="/pg.php" target="_blank" class="btn btn-outline-primary btn-link-custom">直播管理地址</a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近播放区域 -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">最近播放</h5>
+                </div>
+                <div class="card-body">
+                    <div class="recent-play-buttons" id="recentPlayButtons">
+                        <!-- 动态生成最近播放按钮 -->
                     </div>
                 </div>
             </div>
@@ -432,6 +478,8 @@
                         dp.switchVideo({ url: response.url, type: 'auto' }); // 切换播放器视频
                         dp.play(); // 自动播放
                         showMessage("播放地址已更新并开始播放！"); // 显示成功提示
+                        // 保存到最近播放
+                        saveRecentPlay(id);
                     } else if (response.error) { // 如果返回错误信息
                         let errorMsg = `错误: ${response.error}`;
                         if (response.realdata) { // 如果包含调试数据
@@ -477,6 +525,41 @@
             });
         }
         getRooms(); // 执行获取服务器数据
+
+        // 保存最近播放记录
+        function saveRecentPlay(id) {
+            let recentPlays = JSON.parse(localStorage.getItem('recentPlays')) || [];
+            // 移除重复的 ID（如果存在）
+            recentPlays = recentPlays.filter(item => item !== id);
+            // 添加到数组开头
+            recentPlays.unshift(id);
+            // 最多保存 5 个记录
+            if (recentPlays.length > 5) {
+                recentPlays = recentPlays.slice(0, 5);
+            }
+            // 保存到 localStorage
+            localStorage.setItem('recentPlays', JSON.stringify(recentPlays));
+            // 更新按钮显示
+            displayRecentPlays();
+        }
+
+        // 显示最近播放按钮
+        function displayRecentPlays() {
+            const recentPlays = JSON.parse(localStorage.getItem('recentPlays')) || [];
+            const container = $('#recentPlayButtons');
+            container.empty(); // 清空现有按钮
+            recentPlays.forEach(id => {
+                const button = $(`<button class="btn btn-outline-secondary">${id}</button>`);
+                button.click(() => {
+                    $('#bid').val(id); // 填入输入框
+                    updateStream(id); // 触发解析
+                });
+                container.append(button);
+            });
+        }
+
+        // 页面加载时显示最近播放记录
+        displayRecentPlays();
 
         // 为 #bid 输入框绑定回车键事件
         $("#bid").keydown(function (e) {
