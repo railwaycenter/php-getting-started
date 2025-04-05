@@ -167,15 +167,15 @@
             .form-row.align-items-center {
                 flex-wrap: wrap; /* 允许换行 */
             }
-            .col-md-4:first-child, .col-md-2:nth-child(2) {
+            .layout-cdn,.layout-media {
                 flex: 1; /* CDN 和格式选项弹性分配空间 */
                 max-width: none; /* 移除最大宽度限制 */
             }
-            .col-md-2:nth-child(3), .col-md-4:last-child {
+            .layout-parse,.layout-links {
                 flex: 0 0 100%; /* 解析按钮和链接占满一行 */
                 max-width: 100%;
             }
-            .col-md-4:last-child {
+            .layout-links {
                 display: flex; /* 链接按钮在一行 */
                 justify-content: space-between; /* 链接按钮均匀分布 */
             }
@@ -200,54 +200,63 @@
         }
 
         /* 769px 到 991px 调整 */
-        @media (min-width: 769px) and (max-width: 991px) {
-            /* 调整主输入区域的布局 */
-            .form-row.align-items-center {
+        @media (min-width: 768px) and (max-width: 991px) {
+            /* 调整容器布局 */
+            .layout-container {
+                display: flex;
                 flex-wrap: wrap; /* 允许换行 */
             }
-            .col-md-4:first-child, .col-md-2:nth-child(2) {
-                flex: 1; /* CDN 和格式选项弹性分配空间 */
-                max-width: none; /* 移除最大宽度限制 */
-            }
-            .col-md-2:nth-child(3), .col-md-4:last-child {
-                flex: 0 0 100%; /* 解析按钮和链接占满一行 */
+
+            /* 解析按钮和链接占满一行 */
+            .layout-parse,
+            .layout-links {
+                flex: 0 0 100%; /* 占满一行 */
                 max-width: 100%;
             }
-            .col-md-4:last-child {
+
+            /* 链接部分调整 */
+            .layout-links {
                 display: flex; /* 链接按钮在一行 */
-                justify-content: space-between; /* 链接按钮均匀分布 */
+                justify-content: space-between; /* 均匀分布 */
                 margin-top: 10px; /* 与上一行增加间距 */
             }
-            /* 调整 CDN 和格式选项按钮 */
-            #cdn-group, #media-group {
-                display: inline-flex; /* 使用 Flexbox 让按钮组在一行 */
+
+            /* CDN 和媒体类型弹性分配空间 */
+            .layout-cdn,
+            .layout-media {
+                flex: 1; /* 弹性分配空间 */
+                max-width: none; /* 移除最大宽度限制 */
+                margin-top:10px;
+            }
+
+            /* 调整 CDN 和媒体类型按钮组 */
+            #cdn-group,
+            #media-group {
+                display: inline-flex; /* 按钮组在一行 */
                 flex-wrap: nowrap; /* 不换行 */
                 width: auto; /* 自适应宽度 */
             }
-            #cdn-group .btn, #media-group .btn {
-                font-size: 0.9rem; /* 保持字体大小 */
+
+            #cdn-group .btn,
+            #media-group .btn {
+                font-size: 1rem; /* 保持字体大小 */
                 padding: 0.375rem 0.5rem; /* 统一内边距 */
                 white-space: nowrap; /* 强制文字不换行 */
             }
-            /* 调整解析按钮和链接按钮 */
-            #btnParse {
+
+            /* 解析按钮调整 */
+            .layout-parse #btnParse {
                 margin-top: 10px; /* 与上一行增加间距 */
             }
-            .btn-link-custom {
+
+            /* 链接按钮调整 */
+            .layout-links .btn-link-custom {
                 flex: 1; /* 平均分配宽度 */
                 margin-right: 5px; /* 链接按钮间距 */
             }
-            .btn-link-custom:last-child {
+
+            .layout-links .btn-link-custom:last-child {
                 margin-right: 0; /* 最后一个链接按钮无右间距 */
-            }
-            /* 最近播放按钮调整 */
-            .recent-play-buttons {
-                flex-wrap: wrap; /* 允许换行 */
-                gap: 8px;
-            }
-            .recent-play-buttons .btn {
-                flex: 1 1 auto; /* 弹性分配宽度 */
-                min-width: 120px; /* 最小宽度 */
             }
         }
     </style>
@@ -281,9 +290,18 @@
                         </div>
                     </div>
                     <!-- CDN、媒体类型、提交按钮和链接 -->
-                    <div class="form-row align-items-center">
+                    <div class="form-row align-items-center layout-container">
+                        <!-- 解析按钮 -->
+                        <div class="col-md-2 layout-parse">
+                            <button class="btn btn-success btn-block" id="btnParse" type="button">解析</button>
+                        </div>
+                        <!-- 外部链接 -->
+                        <div class="col-md-4 layout-links">
+                            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-outline-primary btn-link-custom mr-2">虎牙直播地址</a>
+                            <a href="/pg.php" target="_blank" class="btn btn-outline-primary btn-link-custom">直播管理地址</a>
+                        </div>
                         <!-- CDN 选择 -->
-                        <div class="col-md-4">
+                        <div class="col-md-4 layout-cdn">
                             <div class="btn-group" id="cdn-group" role="group">
                                 <button type="button" class="btn btn-outline-info active" data-cdn="hscdn">华为CDN</button>
                                 <button type="button" class="btn btn-outline-info" data-cdn="txcdn">腾讯CDN</button>
@@ -291,20 +309,11 @@
                             </div>
                         </div>
                         <!-- 媒体类型选择 -->
-                        <div class="col-md-2">
+                        <div class="col-md-2 layout-media">
                             <div class="btn-group" id="media-group" role="group">
                                 <button type="button" class="btn btn-outline-warning active" data-media="flv">FLV</button>
                                 <button type="button" class="btn btn-outline-warning" data-media="hls">HLS</button>
                             </div>
-                        </div>
-                        <!-- 解析按钮 -->
-                        <div class="col-md-2">
-                            <button class="btn btn-success btn-block" id="btnParse" type="button">解析</button>
-                        </div>
-                        <!-- 外部链接 -->
-                        <div class="col-md-4">
-                            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-outline-primary btn-link-custom mr-2">虎牙直播地址</a>
-                            <a href="/pg.php" target="_blank" class="btn btn-outline-primary btn-link-custom">直播管理地址</a>
                         </div>
                     </div>
                 </div>
@@ -468,6 +477,8 @@
         function updateStream(id) {
             const cdn = $("#cdn-group .btn.active").data('cdn'); // 获取选中的 CDN
             const media = $("#media-group .btn.active").data('media'); // 获取选中的媒体类型
+            // 禁用解析按钮
+            $("#btnParse").prop('disabled', true);
             $.ajax({
                 url: 'huyaapi.php', // 修改为 huyaapi.php
                 method: 'GET', // 使用 GET 方法
@@ -497,6 +508,10 @@
                 },
                 error: function (xhr) { // 请求失败回调
                     showMessage("请求失败: " + xhr.statusText); // 显示请求失败提示
+                },
+                complete: function () { // 请求完成（成功或失败）后执行
+                    $("#btnParse").prop('disabled', false); // 重新启用解析按钮
+                    $("#bid").val(''); // 清空输入框
                 }
             });
         }
