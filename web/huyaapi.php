@@ -179,7 +179,7 @@ if ($jsonStr["status"] == 200) {
             exit();
         }
     }
-    echo json_encode(['url' => $mediaurl]);
+    echo json_encode(['url' => $mediaurl, 'realdata' => $jsonStr, 'format_result'=>$format_result]);
 } else {
     echo json_encode(['error' => 'Failed to fetch stream data from Huya API', 'realdata' => $realdata]);
 }

@@ -171,8 +171,8 @@
                 flex: 1; /* CDN 和格式选项弹性分配空间 */
                 max-width: none; /* 移除最大宽度限制 */
             }
-            .layout-parse,.layout-links {
-                flex: 0 0 100%; /* 解析按钮和链接占满一行 */
+            .layout-parse,.layout-links,.layout-parse2 {
+                flex: 0 0 50%; /* 解析按钮和链接占满一行 */
                 max-width: 100%;
             }
             .layout-links {
@@ -186,6 +186,7 @@
                 padding-left: 0; /* 移除左侧内边距 */
                 padding-right: 0; /* 移除右侧内边距 */
             }
+
             #bid {
                 width: 100%; /* 强制输入框宽度占满容器 */
             }
@@ -200,7 +201,7 @@
         }
 
         /* 769px 到 991px 调整 */
-        @media (min-width: 768px) and (max-width: 991px) {
+        @media (min-width: 769px) and (max-width: 991px) {
             /* 调整容器布局 */
             .layout-container {
                 display: flex;
@@ -209,8 +210,9 @@
 
             /* 解析按钮和链接占满一行 */
             .layout-parse,
-            .layout-links {
-                flex: 0 0 100%; /* 占满一行 */
+            .layout-links,
+            .layout-parse2 {
+                flex: 0 0 50%; /* 占满一行 */
                 max-width: 100%;
             }
 
@@ -246,6 +248,11 @@
 
             /* 解析按钮调整 */
             .layout-parse #btnParse {
+                margin-top: 10px; /* 与上一行增加间距 */
+            }
+
+            /* 新增解析按钮调整 */
+            .layout-parse2 #btnParse2 {
                 margin-top: 10px; /* 与上一行增加间距 */
             }
 
@@ -292,12 +299,18 @@
                     <!-- CDN、媒体类型、提交按钮和链接 -->
                     <div class="form-row align-items-center layout-container">
                         <!-- 解析按钮 -->
-                        <div class="col-md-2 layout-parse">
+                        <div class="col-md-1 layout-parse">
                             <button class="btn btn-success btn-block" id="btnParse" type="button">解析</button>
                         </div>
+                        <!-- 新增解析按钮 -->
+                        <div class="col-md-1 layout-parse2">
+                            <button class="btn btn-success btn-block" id="btnParse2" type="button">解析2</button>
+                        </div>
                         <!-- 外部链接 -->
-                        <div class="col-md-4 layout-links">
-                            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-outline-primary btn-link-custom mr-2">虎牙直播地址</a>
+                        <div class="col-md-2 layout-links">
+                            <a href="https://www.huya.com/g/wzry#cate-0-0" target="_blank" class="btn btn-outline-primary btn-link-custom">虎牙直播地址</a>
+                        </div>
+                        <div class="col-md-2 layout-links">
                             <a href="/pg.php" target="_blank" class="btn btn-outline-primary btn-link-custom">直播管理地址</a>
                         </div>
                         <!-- CDN 选择 -->
@@ -306,6 +319,7 @@
                                 <button type="button" class="btn btn-outline-info active" data-cdn="hscdn">华为CDN</button>
                                 <button type="button" class="btn btn-outline-info" data-cdn="txcdn">腾讯CDN</button>
                                 <button type="button" class="btn btn-outline-info" data-cdn="hycdn">虎牙CDN</button>
+                                <button type="button" class="btn btn-outline-info" data-cdn="alicdn">阿里CDN</button>
                             </div>
                         </div>
                         <!-- 媒体类型选择 -->
@@ -485,6 +499,9 @@
                 data: { id: id, cdn: cdn, media: media }, // 传递 ID、CDN 和媒体类型参数
                 dataType: 'json', // 预期返回 JSON 数据
                 success: function (response) { // 请求成功回调
+                    console.log("Realdata:", response.realdata); // 记录调试数据
+                    console.log("format_result:", response.format_result);
+                    console.log("mediaurl:", response.url);
                     if (response.url) { // 如果返回有效 URL
                         dp.switchVideo({ url: response.url, type: 'auto' }); // 切换播放器视频
                         dp.play(); // 自动播放
@@ -511,6 +528,58 @@
                 },
                 complete: function () { // 请求完成（成功或失败）后执行
                     $("#btnParse").prop('disabled', false); // 重新启用解析按钮
+                    $("#bid").val(''); // 清空输入框
+                }
+            });
+        }
+
+        // 新增的解析函数，使用代理接口
+        function updateStream2(id) {
+            // 处理输入的 ID，提取纯 ID 部分
+            let cleanId = id;
+            if (id.includes('huya.com')) {
+                // 提取 URL 中的 ID（例如 https://www.huya.com/abc123 -> abc123）
+                const match = id.match(/\/([^\/]+)$/);
+                if (match) {
+                    cleanId = match[1];
+                } else {
+                    showMessage("无效的虎牙 URL 格式！");
+                    return;
+                }
+            }
+
+            if (!cleanId) {
+                showMessage("虎牙 ID 不能为空！");
+                return;
+            }
+
+            const cdn = $("#cdn-group .btn.active").data('cdn'); // 获取选中的 CDN
+            const media = $("#media-group .btn.active").data('media'); // 获取选中的媒体类型
+            // 禁用解析按钮
+            $("#btnParse2").prop('disabled', true);
+            $.ajax({
+                url: 'proxy.php', // 使用本地代理接口
+                method: 'GET', // 使用 GET 方法
+                data: { id: cleanId , action: 'proxy'}, // 传递 ID 参数
+                dataType: 'json', // 预期返回 JSON 数据
+                success: function (response) { // 请求成功回调
+                    console.log("Response:", response); // 记录返回数据
+                    if (response[media] && response[media][cdn]) { // 检查是否有对应的 CDN 和媒体类型链接
+                        const playUrl = response[media][cdn]; // 获取播放链接
+                        dp.switchVideo({ url: playUrl, type: 'auto' }); // 切换播放器视频
+                        dp.play(); // 自动播放
+                        showMessage("播放地址已更新并开始播放！"); // 显示成功提示
+                        // 保存到最近播放
+                        saveRecentPlay(cleanId);
+                    } else {
+                        showMessage("未找到对应的播放地址！"); // 无有效链接时的提示
+                    }
+                },
+                error: function (xhr) { // 请求失败回调
+                    showMessage("请求失败: " + xhr.statusText); // 显示请求失败提示
+                },
+                complete: function () { // 请求完成（成功或失败）后执行
+                    $("#btnParse2").prop('disabled', false); // 重新启用解析按钮
                     $("#bid").val(''); // 清空输入框
                 }
             });
@@ -588,6 +657,16 @@
             const bid = $("#bid").val(); // 获取输入的虎牙 ID
             if (bid) { // 如果输入不为空
                 updateStream(bid); // 调用更新播放流函数
+            } else {
+                showMessage("请输入虎牙ID！"); // 提示用户输入ID
+            }
+        });
+
+        // 新增解析按钮点击事件
+        $("#btnParse2").click(function () {
+            const bid = $("#bid").val(); // 获取输入的虎牙 ID
+            if (bid) { // 如果输入不为空
+                updateStream2(bid); // 调用新解析函数
             } else {
                 showMessage("请输入虎牙ID！"); // 提示用户输入ID
             }
