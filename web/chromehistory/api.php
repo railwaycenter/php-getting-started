@@ -20,12 +20,6 @@ $config = require 'config.php';
 // 初始化数据库连接
 $database = new Medoo($config);
 
-$hash_token = getenv('hash_token'),
-$api_token = $_GET['api_token'] ?? '';
-if(!password_verify($api_token, $hash_token)) {
-    sendResponse(401, ['message' => '未授权：需要会话或 API 密钥']);
-}
-
 // 辅助函数：清理字符串，防止 XSS
 function sanitizeString($input) {
     return htmlspecialchars(strip_tags($input), ENT_QUOTES, 'UTF-8');
@@ -121,6 +115,11 @@ function insertOrUpdateBookmark($database, $validatedData) {
     return ['message' => '数据入库成功', 'id' => $database->id(), 'isBookmarked' => $validatedData['isBookmarked']];
 }
 
+$hash_token = getenv('hash_token'),
+$api_token = $_GET['api_token'] ?? '';
+if(!password_verify($api_token, $hash_token)) {
+    sendResponse(401, ['message' => '未授权：需要会话或 API 密钥']);
+}
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {

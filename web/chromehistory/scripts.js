@@ -15,7 +15,8 @@ const elements = {
     blacklistTableBody: document.querySelector('#blacklist-table tbody')
 };
 
-const api_token = process.env.api_token
+const api_token = process.env.api_token;
+console.log(api_token);
 
 // 设置默认日期为当前本地时间，格式化为 datetime-local 所需的字符串
 function formatLocalDateTime(date)
