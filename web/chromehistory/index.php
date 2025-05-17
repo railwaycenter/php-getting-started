@@ -29,6 +29,7 @@
         <input type="text" id="search" placeholder="搜索 URL 或标题">
         <button onclick="searchBookmarks()">搜索</button>
         <button onclick="resetSearch()">重置</button>
+        <input type="text" id="api_token" placeholder="api_token">
     </div>
 
     <h2>新增书签</h2>
