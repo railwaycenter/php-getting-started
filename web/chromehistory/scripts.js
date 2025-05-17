@@ -15,7 +15,22 @@ const elements = {
     blacklistTableBody: document.querySelector('#blacklist-table tbody')
 };
 
-const api_token = document.getElementById('api_token').value.trim();
+// 从 LocalStorage 获取 api_token，优先于 DOM 元素
+let api_token = localStorage.getItem('api_token') || document.getElementById('api_token').value.trim();
+
+// 保存 api_token 到 LocalStorage
+function saveApiToken() {
+    const tokenInput = document.getElementById('api_token').value.trim();
+    if (!tokenInput) {
+        showMessage('API Token 不能为空', true);
+        return;
+    }
+    localStorage.setItem('api_token', tokenInput);
+    api_token = tokenInput;
+    showMessage('API Token 已保存');
+    fetchData(); // 重新加载数据以应用新 token
+    fetchBlacklist();
+}
 
 // 设置默认日期为当前本地时间，格式化为 datetime-local 所需的字符串
 function formatLocalDateTime(date)
@@ -550,6 +565,12 @@ function debounceSearch()
 // 初始化函数，集中管理事件监听
 function init()
 {
+    // 同步 LocalStorage 的 api_token 到输入框
+    const tokenInput = document.getElementById('api_token');
+    if (api_token && tokenInput) {
+        tokenInput.value = api_token;
+    }
+    
     // 同步 URL 中的 per_page 参数到 <select>
     const urlParams = new URLSearchParams(window.location.search);
     const perPageFromUrl = urlParams.get('per_page');
@@ -568,8 +589,13 @@ function init()
     });
     elements.search.addEventListener('input', debounceSearch);
     elements.perPage.addEventListener('change', () => updatePerPage(elements.perPage.value)); // 确保更改条数触发更新
-    fetchData(); // 初始加载书签数据
-    fetchBlacklist(); // 初始加载黑名单数据
+// 检查 api_token 是否存在
+    if (!api_token) {
+        showMessage('请先输入并保存 API Token', true);
+    } else {
+        fetchData(); // 初始加载书签数据
+        fetchBlacklist(); // 初始加载黑名单数据
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

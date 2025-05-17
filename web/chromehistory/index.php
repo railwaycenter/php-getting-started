@@ -10,6 +10,13 @@
 
     <div id="message"></div>
 
+    <!-- API Token 输入区域 -->
+    <div class="form-group">
+        <label for="api_token">API Token:</label>
+        <input type="text" id="api_token" name="api_token" placeholder="请输入 API Token" required>
+        <button onclick="saveApiToken()">保存 Token</button>
+    </div>
+    
     <!-- 黑名单管理区域，默认折叠 -->
     <details class="blacklist-group">
         <summary><h2>黑名单管理</h2></summary>
@@ -29,7 +36,6 @@
         <input type="text" id="search" placeholder="搜索 URL 或标题">
         <button onclick="searchBookmarks()">搜索</button>
         <button onclick="resetSearch()">重置</button>
-        <input type="text" id="api_token" placeholder="api_token">
     </div>
 
     <h2>新增书签</h2>
