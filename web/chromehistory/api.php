@@ -9,6 +9,8 @@ header("Access-Control-Allow-Headers: Content-Type");
 // 版本号 v1.0.8
 const VERSION = 'v1.0.8';
 
+date_default_timezone_set('Asia/Shanghai');//'Asia/Shanghai'   亚洲/上海
+    
 // 引入 Medoo 单文件
 require_once 'Medoo.php';
 
