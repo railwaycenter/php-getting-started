@@ -10,15 +10,15 @@
     <!-- 设置 viewport 以支持响应式设计，适配手机端 -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 引入 Font Awesome 图标库 -->
-    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/font-awesome.all.min.css">
     <!-- 引入 Bootstrap CSS -->
-    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/bootstrap/4.6.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- 引入 DataTables Bootstrap 样式 -->
-    <link rel="stylesheet" href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
     <!-- 引入 AdminLTE 样式 -->
-    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="css/adminlte.min.css">
     <!-- 引入 autoComplete.js 样式 -->
-    <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-10-y/tarekraafat-autocomplete.js/10.2.6/css/autoComplete.min.css">
+    <link rel="stylesheet" href="css/autoComplete.min.css">
 
     <style>
         /* 提示框样式 */
@@ -386,15 +386,15 @@
 </div>
 
 <!-- 引入外部 JS 文件 -->
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-10-y/bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/admin-lte/3.2.0/js/adminlte.min.js"></script>
-<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-10-y/datatables/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-10-y/tarekraafat-autocomplete.js/10.2.6/autoComplete.min.js"></script>
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/hls.js/1.1.5/hls.min.js"></script>
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/flv.js/1.6.2/flv.min.js"></script>
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-10-y/dplayer/1.26.0/DPlayer.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/adminlte.min.js"></script>
+<script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.bootstrap4.min.js"></script>
+<script src="js/autoComplete.min.js"></script>
+<script src="js/hls.min.js"></script>
+<script src="js/flv.min.js"></script>
+<script src="js/DPlayer.min.js"></script>
 
 <script>
     // 初始化 DPlayer 播放器
