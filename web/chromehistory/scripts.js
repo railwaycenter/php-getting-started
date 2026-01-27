@@ -253,8 +253,9 @@ function renderPagination(data) {
             html += `<a href="#" onclick="changePage(${currentPage - 1}); return false;">上一页</a>`;
         }
 
-        // 计算分页范围，前后各显示 3 页
-        const range = 3;
+        // 计算分页范围，手机端前后显示 1 页，PC 显示 3 页
+        const isMobile = window.innerWidth < 640;
+        const range = isMobile ? 1 : 3;
         const start = Math.max(1, currentPage - range);
         const end = Math.min(totalPages, currentPage + range);
 
@@ -695,6 +696,7 @@ function changePage(newPage) {
     const endDate = elements.endDate.value;
     window.history.pushState({}, '', `?page=${newPage}&per_page=${perPage}&search=${encodeURIComponent(search)}&search_type=${searchType}&start_date=${startDate}&end_date=${endDate}`);
     fetchData();
+    window.scrollTo({ top: 0, behavior: 'auto' }); // 翻页后自动回顶
 }
 
 function updatePerPage(perPage) {
@@ -704,6 +706,7 @@ function updatePerPage(perPage) {
     const endDate = elements.endDate.value;
     window.history.pushState({}, '', `?page=1&per_page=${perPage}&search=${encodeURIComponent(search)}&search_type=${searchType}&start_date=${startDate}&end_date=${endDate}`);
     fetchData();
+    window.scrollTo({ top: 0, behavior: 'auto' }); // 更新条数后自动回顶
 }
 
 // 添加防抖功能以优化搜索性能

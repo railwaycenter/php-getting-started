@@ -376,6 +376,30 @@ select:focus {
     flex: 1;
 }
 
+/* 分页控件 */
+.pagination {
+    margin-top: 1.5rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    position: sticky;
+    bottom: -1px;
+    /* 紧贴底部 */
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 50;
+    /* 提升层级，确保在表格内容之上 */
+    width: 100%;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    /* 向上阴影增加层次感 */
+}
+
 /* 表格样式 - Glassmorphism */
 .card {
     background: var(--glass-bg);
@@ -390,9 +414,8 @@ select:focus {
 
 .table-container {
     width: 100%;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
     background: var(--card-bg);
+    /* 移除 border-radius 和 overflow: hidden，否则会破坏内部元素的 position: sticky */
 }
 
 table {
@@ -657,8 +680,6 @@ a:hover {
     font-size: 0.85rem;
     flex-wrap: wrap;
     /* 允许换行，防止宽度撑爆影响 fixed 元素 */
-    padding-bottom: 80px;
-    /* 为悬浮球预留安全区 */
 }
 
 .pagination a,
@@ -901,9 +922,9 @@ a:hover {
     display: none;
     position: fixed !important;
     right: 25px !important;
-    bottom: 50px !important;
-    width: 60px !important;
-    height: 60px !important;
+    bottom: 20px !important;
+    width: 30px !important;
+    height: 30px !important;
     border-radius: 50% !important;
     background: var(--primary-color) !important;
     color: white !important;
@@ -1160,5 +1181,25 @@ a:hover {
         flex: 1;
         max-width: 60vw;
         /* 限制 URL 宽度给按钮让位 */
+    }
+
+    /* 移动端分页优化 */
+    .pagination {
+        padding: 0.75rem 0.25rem !important;
+        gap: 0.25rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 0.3rem 0.6rem !important;
+        min-width: 1.8rem;
+        text-align: center;
+    }
+
+    .pagination select,
+    .pagination input {
+        padding: 0.2rem !important;
+        font-size: 0.75rem !important;
     }
 }
