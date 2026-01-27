@@ -1,97 +1,1164 @@
-/* 从 index.php 中提取的 CSS 样式，保持原有注释和结构 */
-/* 版本号 v1.0.9 */
-body { font-family: Arial, sans-serif; margin: 20px; }
-h1, h2 { color: #333; }
-table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-th { background-color: #4CAF50; color: white; }
-tr:nth-child(even) { background-color: #f9f9f9; }
-tr:hover { background-color: #f1f1f1; }
-.text-ellipsis { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.form-group { margin-bottom: 15px; }
-.form-group input, .form-group button { padding: 8px; margin-right: 10px; }
-.form-group button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-.form-group button:hover { background-color: #45a049; }
-.error, .success { font-weight: bold; padding: 10px; margin-bottom: 10px; }
-.error { color: #D32F2F; background-color: #FFEBEE; }
-.success { color: #388E3C; background-color: #E8F5E9; }
-.pagination { margin: 20px 0; text-align: center; }
-.pagination a, .pagination span { margin: 0 5px; padding: 8px 12px; text-decoration: none; color: #333; }
-.pagination a:hover { background-color: #ddd; }
-.pagination .current { background-color: #4CAF50; color: white; }
-.action-btn { padding: 6px 12px; margin-right: 5px; border: none; cursor: pointer; }
-.edit-btn { background-color: #2196F3; color: white; }
-.delete-btn { background-color: #F44336; color: white; }
-.batch-delete-btn { background-color: #F44336; color: white; margin-left: 10px; border: none; cursor: pointer; }
-.search-group { margin-bottom: 20px; }
-.search-group input { width: 300px; }
-/* 新增样式：控制日期和创建时间列 */
-.date-column, .created-at-column {
-    white-space: nowrap; /* 防止换行 */
-    min-width: 150px; /* 设置最小宽度，减少空白 */
-    overflow: hidden; /* 隐藏溢出内容 */
-    text-overflow: ellipsis; /* 溢出时显示省略号 */
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-main: #f8fafc;
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    --card-bg: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --text-inverse: #ffffff;
+    --border-color: #e2e8f0;
+    --input-bg: #ffffff;
+    --table-header-bg: #f8fafc;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
-/* 删除确认框样式 */
+
+[data-theme='dark'] {
+    --bg-main: #0f172a;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --card-bg: #1e293b;
+    --glass-bg: rgba(30, 41, 59, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-inverse: #0f172a;
+    --border-color: #334155;
+    --input-bg: #1e293b;
+    --table-header-bg: #1e293b;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    /* 针对深色模式的特定修正 */
+    --text-on-card: #f1f5f9;
+    --text-meta: #cbd5e1;
+    --row-hover-bg: rgba(255, 255, 255, 0.05);
+    /* 深色模式下更柔和的悬停色 */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    margin: 0;
+    min-height: 100vh;
+    position: relative;
+    /* 为 fixed 提供稳定参考系 */
+}
+
+/* 模态窗口激活时锁定页面滚动 */
+body.modal-open {
+    overflow: hidden;
+    padding-right: var(--scrollbar-width, 0px);
+    /* 防止滚动条消失导致的页面抖动 */
+}
+
+h1,
+h2 {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 1.35rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    background: linear-gradient(to right, #4f46e5, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h2 {
+    font-size: 1.15rem;
+    margin: 0;
+}
+
+/* 基础控件 */
+button {
+    font-family: inherit;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.4rem;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 0.85rem;
+    background: var(--card-bg);
+    color: var(--text-main);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+    background-color: var(--bg-main);
+    border-color: var(--text-muted);
+    transform: translateY(-1px);
+}
+
+button.primary {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+button.primary:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"],
+select,
+textarea {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.4rem;
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    outline: none;
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+
+/* 黑名单标签云样式 */
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 4px 0;
+}
+
+.tag-item {
+    background: var(--bg-main);
+    color: var(--text-main);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.tag-edit-btn {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    padding: 6px;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag-edit-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.05);
+}
+
+input:focus,
+select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+/* 核心布局 */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 1.25rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    cursor: pointer;
+    /* 提示可点击折叠 */
+}
+
+.sidebar * {
+    cursor: default;
+}
+
+/* 内部元素恢复默认 */
+.sidebar button,
+.sidebar input,
+.sidebar select,
+.sidebar a,
+.sidebar summary,
+.sidebar h3 {
+    cursor: pointer;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 1.5rem;
+    background: var(--bg-gradient);
+    min-width: 0;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 侧边栏折叠 */
+.sidebar-collapsed .sidebar {
+    width: 50px;
+    padding: 1.25rem 0;
+}
+
+.sidebar-collapsed .main-content {
+    margin-left: 50px;
+}
+
+/* 确保折叠时切换按钮居中 */
+.sidebar-collapsed .sidebar-header {
+    justify-content: center;
+}
+
+.sidebar-collapsed .sidebar h1,
+.sidebar-collapsed .sidebar-section .text,
+.sidebar-collapsed .sidebar-section>*:not(.section-title):not(details):not(summary),
+.sidebar-collapsed #message {
+    display: none !important;
+}
+
+/* 修复 details/summary 在折叠时的显示 */
+.sidebar-collapsed .sidebar-section details,
+.sidebar-collapsed .sidebar-section summary {
+    display: block !important;
+    width: 100%;
+}
+
+.sidebar-collapsed .sidebar-section details summary {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    outline: none;
+    cursor: default !important;
+    /* 禁用手型指针 */
+    pointer-events: none;
+    /* 核心：禁止折叠时产生交互 */
+}
+
+.sidebar-collapsed .sidebar-section details summary::-webkit-details-marker {
+    display: none !important;
+}
+
+.sidebar-collapsed .sidebar-section details summary::-webkit-details-marker {
+    display: none;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 0 0 1rem 0;
+}
+
+.sidebar-collapsed .section-title {
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.sidebar-collapsed .section-title .icon {
+    font-size: 1.25rem;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+.sidebar-collapsed .section-title .text {
+    display: none;
+}
+
+/* 侧边栏组件 */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+    /* 增加间距 */
+}
+
+/* 标题自动撑满剩余空间 */
+.sidebar-header h1 {
+    flex: 1;
+    margin: 0;
+}
+
+#sidebar-toggle,
+#theme-toggle {
+    background: none;
+    border: none;
+    padding: 6px;
+    color: var(--text-muted);
+    transition: transform 0.3s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#theme-toggle:hover {
+    color: var(--primary-color);
+    background: var(--bg-main);
+    border-radius: 4px;
+}
+
+.sidebar-collapsed #sidebar-toggle {
+    transform: rotate(180deg);
+}
+
+/* 折叠时隐藏主题按钮 */
+/* .sidebar-collapsed #theme-toggle {
+    display: none;
+} */
+
+.sidebar-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.sidebar-section:hover {
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: 0.5rem;
+}
+
+.compact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.compact-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.compact-input-group input {
+    flex: 1;
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.sidebar-actions button {
+    flex: 1;
+}
+
+/* 表格样式 - Glassmorphism */
+.card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.5rem;
+}
+
+.table-container {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+th {
+    background: #4CAF50;
+    /* 调深表头色 */
+    color: white;
+    /* 更深的文字 */
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid #cbd5e1;
+    text-align: left;
+    white-space: nowrap;
+    position: sticky;
+    top: -1px;
+    /* 微调贴合 */
+    z-index: 20;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* 滚动时的阴影遮挡感 */
+}
+
+td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+    color: var(--text-main);
+    /* 确保深色模式下文字可见 */
+    word-break: break-all;
+    /* URL 长连接断行 */
+    white-space: normal;
+    /* 允许自动换行 */
+    vertical-align: top;
+    /* 换行时内容靠顶 */
+}
+
+tr:hover td {
+    background-color: var(--row-hover-bg, #f1f5f9) !important;
+    /* 弱化悬停色 */
+}
+
+/* 斑马纹样式 - 弱化对比度 */
+tr:nth-child(even) td {
+    background-color: var(--bg-main);
+}
+
+tr:nth-child(even):hover td {
+    background-color: var(--border-color) !important;
+}
+
+/* 合并列内部样式 */
+.bookmark-info-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+}
+
+/* 标题样式 */
+.bookmark-title {
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.4;
+    white-space: normal;
+}
+
+/* URL 与 图标按钮行的容器 */
+.url-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.bookmark-url {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    white-space: nowrap;
+    /* URL 不换行 */
+    overflow: hidden;
+    /* 溢出隐藏 */
+    text-overflow: ellipsis;
+    /* 显示省略号 */
+    max-width: 50vw;
+    /* 限制宽度以免撑开表格 */
+}
+
+/* 响应式控制类 */
+.mobile-only {
+    display: none !important;
+}
+
+.pc-only {
+    display: table-cell;
+}
+
+/* 元数据合并单元格 (移动端专用结构在 PC 下的样式补丁) */
+.bookmark-meta-cell {
+    display: none;
+}
+
+.meta-id {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.meta-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.meta-status {
+    display: flex;
+    align-items: center;
+}
+
+/* 星星图标样式 */
+.bookmark-star {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    cursor: default;
+    user-select: none;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    /* PC 端居中显示关键 */
+}
+
+.bookmark-star.active {
+    color: #fbbf24;
+    /* 金黄色 */
+}
+
+.bookmark-url a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* 移动端迷你图标按钮 */
+.mobile-only-actions {
+    display: none;
+    /* PC 默认隐藏 */
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.mini-icon-btn {
+    font-size: 0.95rem;
+    /* 缩小图标尺寸 */
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s, opacity 0.2s;
+    padding: 2px 4px;
+    opacity: 0.6;
+    /* 默认半透明，显得更轻盈 */
+}
+
+.mini-icon-btn:active {
+    transform: scale(0.85);
+    opacity: 1;
+}
+
+.mini-icon-btn.delete {
+    opacity: 0.45;
+    /* 删除图标更低调 */
+}
+
+/* 列宽控 */
+/* 列宽控制 (PC模式) */
+#bookmark-table th:nth-child(1) {
+    width: 45px;
+}
+
+/* 单元格点击强化 */
+.checkbox-cell {
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.checkbox-cell input[type="checkbox"] {
+    cursor: pointer;
+    transform: scale(1.2);
+    /* 放大复选框 */
+}
+
+/* 勾选框 */
+#bookmark-table th.pc-only:nth-child(2) {
+    width: 60px;
+}
+
+/* ID */
+#bookmark-table th.mobile-only {
+    width: 0;
+    display: none;
+}
+
+/* 移动端列在 PC 彻底消失 */
+#bookmark-table th:nth-child(4) {
+    width: auto;
+}
+
+/* 书签信息 - 合并后的主内容 */
+#bookmark-table th.pc-only:nth-child(5) {
+    width: 170px;
+}
+
+/* 日期 */
+#bookmark-table th.pc-only:nth-child(6) {
+    width: 30px;
+    text-align: center;
+}
+
+/* 书签(图标) 极致压缩 */
+#bookmark-table td.status-column {
+    text-align: center;
+    width: 30px;
+}
+
+/* 书签(图标) */
+#bookmark-table th.pc-only:nth-child(7) {
+    width: 170px;
+}
+
+/* 创建时间 */
+#bookmark-table th:last-child {
+    width: 140px;
+}
+
+/* 操作 */
+
+.text-ellipsis,
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* 分页 */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+    /* 允许换行，防止宽度撑爆影响 fixed 元素 */
+    padding-bottom: 80px;
+    /* 为悬浮球预留安全区 */
+}
+
+.pagination a,
+.pagination span,
+.pagination button {
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.4rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.pagination a.current {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination input[type="number"] {
+    width: 60px;
+    height: 32px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    margin: 0 0.5rem;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.pagination input[type="number"]:focus {
+    border-color: var(--primary-color);
+}
+
+/* 弹窗与遮罩 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal,
 .confirm-container {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--modal-shadow);
+    border: 1px solid var(--border-color);
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.confirm-buttons {
-    margin-top: 10px;
-    text-align: right;
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, -40%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
 }
-.confirm-btn {
-    padding: 6px 12px;
-    margin-left: 10px;
-    border: none;
-    cursor: pointer;
-}
-.confirm-yes { background-color: #4CAF50; color: white; }
-.confirm-no { background-color: #F44336; color: white; }
-/* 编辑模态框样式 */
+
 .modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    width: 400px;
+    z-index: 1001;
+    width: calc(100% - 32px);
+    /* 确保移动端不溢出 */
+    max-width: 480px;
+    box-sizing: border-box;
+    /* 严防内边距撑破宽度 */
 }
-.modal label { display: block; margin: 10px 0; }
-.modal input[type="text"], .modal input[type="datetime-local"] {
-    width: calc(100% - 16px); /* 减去左右 padding 的总和，确保不顶住边框 */
-    padding: 8px;
-    box-sizing: border-box; /* 确保 padding 不增加总宽度 */
+
+.modal input[type="text"],
+.modal input[type="url"],
+.modal input[type="datetime-local"],
+.modal select,
+.modal textarea {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 1rem;
+    padding: 0.65rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-family: inherit;
 }
-.modal-buttons { margin-top: 10px; text-align: right; }
-.modal-btn { padding: 6px 12px; margin-left: 10px; border: none; cursor: pointer; }
-.modal-save { background-color: #4CAF50; color: white; }
-.modal-cancel { background-color: #F44336; color: white; }
-/* 分页跳转输入框和按钮样式 */
-.pagination input[type="number"] { width: 50px; padding: 5px; margin: 0 5px; }
-.pagination button { padding: 5px 10px; }
-/* 黑名单管理区域样式 */
-.blacklist-group { margin-bottom: 20px; }
-.blacklist-group h2 { display: inline; margin: 0; }
-/* 书签列表标题和批量删除按钮样式 */
+
+.confirm-container {
+    z-index: 2000;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+}
+
+
+
+.modal h3 {
+    font-size: 1.25rem;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    color: var(--text-main);
+    /* 修复深色模式下标题不可见 */
+}
+
+.modal label {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* 按钮颜色增强 */
+.edit-btn {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+.edit-btn:hover {
+    background-color: #2563eb !important;
+}
+
+.delete-btn,
+.batch-delete-btn,
+.confirm-yes {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+.delete-btn:hover,
+.batch-delete-btn:hover,
+.confirm-yes:hover {
+    background-color: #dc2626 !important;
+}
+
+/* 按钮现代 UI 设计建议颜色 */
+.modal-save,
+.confirm-yes {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 0.6rem 1.25rem !important;
+}
+
+.modal-save:hover,
+.confirm-yes:hover {
+    background-color: var(--primary-hover) !important;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+.modal-cancel,
+.confirm-no {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 0.6rem 1.25rem !important;
+}
+
+.modal-cancel:hover,
+.confirm-no:hover {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* 移除旧的混淆样式覆盖 */
+.modal-buttons .action-btn.edit-btn {
+    display: none;
+    /* 已被上述统一规则接管 */
+}
+
+.quick-dates {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.quick-date-btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+.quick-date-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
 .bookmark-header {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
 }
+
 .bookmark-header h2 {
     margin: 0;
-    margin-right: 10px; /* 标题与按钮间距 */
+}
+
+/* 移动端悬浮球 (默认隐藏) */
+#mobile-fab {
+    display: none;
+    position: fixed !important;
+    right: 25px !important;
+    bottom: 50px !important;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background: var(--primary-color) !important;
+    color: white !important;
+    border: none !important;
+    font-size: 26px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    z-index: 99999 !important;
+    /* 增加到极致层级 */
+    cursor: pointer !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.2s, background 0.2s !important;
+    -webkit-tap-highlight-color: transparent !important;
+    pointer-events: auto !important;
+    /* 确保始终可点击 */
+}
+
+#mobile-fab:active {
+    transform: scale(0.9);
+    background: var(--primary-hover);
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 240px;
+    }
+
+    .main-content {
+        margin-left: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* 移动端互斥显示 */
+    .pc-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: block !important;
+    }
+
+    #mobile-fab {
+        display: flex;
+        /* 手机端显示悬浮球 */
+    }
+
+    /* 侧边栏重塑为侧滑抽屉 */
+    .sidebar {
+        position: fixed !important;
+        left: -300px !important;
+        /* 完全隐藏 */
+        top: 0 !important;
+        width: 280px !important;
+        height: 100vh !important;
+        z-index: 5000 !important;
+        margin: 0 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 4px 0 16px rgba(0, 0, 0, 0.1) !important;
+        background: #fff !important;
+        display: block !important;
+        /* 强制显示以支持抽屉 */
+    }
+
+    .mobile-sidebar-open .sidebar {
+        left: 0 !important;
+    }
+
+    /* 抽屉遮罩 */
+    .mobile-sidebar-open::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 4500;
+        backdrop-filter: blur(2px);
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0.5rem !important;
+        /* 极致紧凑内边距 */
+    }
+
+    /* 极致紧凑列表展示 */
+    .table-container {
+        border: none;
+        background: transparent;
+    }
+
+    #bookmark-table {
+        display: block;
+    }
+
+    #bookmark-table thead {
+        display: none;
+    }
+
+    /* 极致紧凑列表展示 */
+    .table-container {
+        border: none;
+        background: transparent;
+    }
+
+    #bookmark-table {
+        display: block;
+    }
+
+    #bookmark-table thead {
+        display: none;
+    }
+
+    #bookmark-table tr {
+        display: block;
+        background: var(--card-bg);
+        margin-bottom: 0.35rem;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 8px;
+        position: relative;
+        border-left: 4px solid var(--primary-color);
+        box-shadow: var(--card-shadow);
+        max-width: 100vw;
+        box-sizing: border-box;
+    }
+
+    #bookmark-table td {
+        display: block;
+        padding: 0 !important;
+        margin-bottom: 0.15rem;
+        width: 100% !important;
+        border: none;
+    }
+
+    /* 勾选框置顶 */
+    #bookmark-table td:nth-child(1) {
+        position: absolute;
+        right: 0.75rem;
+        top: 0.6rem;
+        width: auto !important;
+    }
+
+    /* 核心改动：利用新合并单元格实现完美单行 */
+    .bookmark-meta-cell {
+        display: flex !important;
+        flex-direction: row !important;
+        /* 强制横排 */
+        align-items: center !important;
+        gap: 0.6rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .meta-id,
+    .meta-date {
+        font-size: 0.75rem !important;
+        color: #94a3b8;
+    }
+
+    .meta-status {
+        display: flex;
+        align-items: center;
+    }
+
+    .bookmark-star {
+        font-size: 1rem !important;
+    }
+
+    /* 聚合行中的操作组 */
+    .url-action-row {
+        justify-content: space-between;
+    }
+
+    .mobile-only-actions {
+        display: flex !important;
+        background: transparent;
+        /* 移除气泡背景背景 */
+        padding: 0;
+        box-shadow: none;
+    }
+
+    /* 极致紧凑列表展示 */
+    .table-container {
+        border: none;
+        background: transparent;
+    }
+
+    #bookmark-table {
+        display: block;
+    }
+
+    #bookmark-table thead {
+        display: none;
+    }
+
+    #bookmark-table tr {
+        display: block;
+        background: #fff;
+        margin-bottom: 0.35rem;
+        /* 再次极度压缩 */
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 8px;
+        position: relative;
+        border-left: 4px solid var(--primary-color);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    #bookmark-table td {
+        display: block;
+        padding: 0 !important;
+        margin-bottom: 0.1rem;
+        width: 100% !important;
+        border: none;
+        color: var(--text-main);
+    }
+
+    /* 隐藏原有的底部操作单元格 (因为按钮已经上移到 URL 行) */
+    #bookmark-table td.pc-only:last-child {
+        display: none !important;
+    }
+
+    /* 勾选框置顶 */
+    #bookmark-table td:nth-child(1) {
+        position: absolute;
+        right: 0.75rem;
+        top: 0.6rem;
+        width: auto !important;
+    }
+
+    /* 移动端聚合行 */
+    .bookmark-meta-cell {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.6rem !important;
+        margin-bottom: 0.15rem !important;
+    }
+
+    /* 书签信息：标题与 URL */
+    .bookmark-title {
+        font-size: 0.9rem !important;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.05rem !important;
+    }
+
+    .bookmark-url {
+        font-size: 0.7rem !important;
+        opacity: 0.4;
+        margin-bottom: 0 !important;
+        flex: 1;
+        max-width: 60vw;
+        /* 限制 URL 宽度给按钮让位 */
+    }
 }
