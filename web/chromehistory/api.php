@@ -113,8 +113,17 @@ function insertOrUpdateBookmark($database, $validatedData)
         'ORDER'      => ['created_at' => 'DESC']
     ]);
 
-    // 前端已改为发送 Y-m-d H:i:s 字符串格式，直接赋值
-    $validatedDateFormatted = $validatedData['date'];
+    // 前端已改为发送 Y-m-d H:i:s 字符串格式，或 10/13 位时间戳
+    $rawDate = $validatedData['date'];
+    if (is_numeric($rawDate)) {
+        // 如果是数字且长度接近 13 位，认为是毫秒级，否则认为是秒级
+        $timestamp              = (strlen($rawDate) >= 12) ? ($rawDate / 1000) : $rawDate;
+        $validatedDateFormatted = date('Y-m-d H:i:s', (int) $timestamp);
+    } else {
+        // 尝试解析字符串，如果无效则回退至当前时间
+        $ts                     = strtotime($rawDate);
+        $validatedDateFormatted = ($ts === false) ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s', $ts);
+    }
 
     if (!empty($existing)) {
         $existingDate   = $existing[0]['date'];
@@ -276,10 +285,20 @@ try {
                     sendResponse(400, ['message' => $blacklistCheck]);
                 }
 
+                // 处理编辑时的日期
+                $rawEditDate = $validatedData['date'];
+                if (is_numeric($rawEditDate)) {
+                    $ts                = (strlen($rawEditDate) >= 12) ? ($rawEditDate / 1000) : $rawEditDate;
+                    $editDateFormatted = date('Y-m-d H:i:s', (int) $ts);
+                } else {
+                    $ts                = strtotime($rawEditDate);
+                    $editDateFormatted = ($ts === false) ? date('Y-m-d H:i:s') : date('Y-m-d H:i:s', $ts);
+                }
+
                 $database->update('bookmarks', [
                     'url'          => $validatedData['url'],
                     'title'        => $validatedData['title'],
-                    'date'         => $validatedData['date'],
+                    'date'         => $editDateFormatted,
                     'isBookmarked' => $validatedData['isBookmarked']
                 ], ['id' => $id]);
                 sendResponse(200, ['message' => '记录已更新', 'id' => $id, 'isBookmarked' => $validatedData['isBookmarked']]);
