@@ -20,14 +20,12 @@ if (file_exists(__DIR__ . '/.env')) {
 }
 
 return [
-    'database_type' => 'mysql',
+    'database_type' => 'pgsql',
     'database_name' => getenv('database_name_ch'), // 替换为你的数据库名
     'server'        => getenv('database_server'),
     'username'      => getenv('database_username'),
     'password'      => getenv('database_password'),
-    'port'          => getenv('database_port') ?: 3306,
-    'charset'       => 'utf8mb4',
-    'collation'     => 'utf8mb4_general_ci',
+    'port'          => getenv('database_port') ?: 5432,
     'error'         => PDO::ERRMODE_EXCEPTION
 ];
 ?>
