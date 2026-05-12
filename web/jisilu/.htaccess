@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    # 将所有请求转发到 public 文件夹
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
