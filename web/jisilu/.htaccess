@@ -1,3 +1,6 @@
+# 1. 优先访问 index.html
+DirectoryIndex index.html index.php
+
 <IfModule mod_rewrite.c>
     RewriteEngine on
     # 将所有请求转发到 public 文件夹
