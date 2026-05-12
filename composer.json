@@ -4,7 +4,9 @@
     "monolog/monolog": "^1.22",
     "twig/twig": "^2.0",
     "symfony/twig-bridge": "^3",
-    "ext-pdo_pgsql": "*"
+    "ext-pdo_pgsql": "*",
+    "ext-intl": "*",
+    "ext-mbstring": "*"
   },
   "require-dev": {
     "heroku/heroku-buildpack-php": "*"
