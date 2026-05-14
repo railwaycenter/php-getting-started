@@ -13,28 +13,28 @@ class FundFetcher
     public function fetchFund($code)
     {
         $result = [
-            'name' => '',
-            'stockName' => '',
-            'price' => 0,
-            'marketPrice' => 0,
-            'netValue' => 0,
+            'name'           => '',
+            'stockName'      => '',
+            'price'          => 0,
+            'marketPrice'    => 0,
+            'netValue'       => 0,
             'purchaseStatus' => '',
-            'purchaseFee' => '',
-            'source' => '',
-            'volume' => 0
+            'purchaseFee'    => '',
+            'source'         => '',
+            'volume'         => 0
         ];
 
         // 1. Tiantian Fund
         try {
-            $url = "https://fundgz.1234567.com.cn/js/{$code}.js?rt=" . time() . "000";
+            $url  = "https://fundgz.1234567.com.cn/js/{$code}.js?rt=" . time() . "000";
             $text = $this->curlGet($url);
             if (preg_match('/jsonpgz\((.*)\)/', $text, $matches)) {
                 $data = json_decode($matches[1], true);
                 if ($data) {
-                    $result['name'] = $data['name'] ?? '';
-                    $result['price'] = floatval($data['gsz'] ?? 0);
+                    $result['name']     = $data['name'] ?? '';
+                    $result['price']    = floatval($data['gsz'] ?? 0);
                     $result['netValue'] = floatval($data['dwjz'] ?? 0);
-                    $result['source'] = 'Tiantian';
+                    $result['source']   = 'Tiantian';
                 }
             }
         } catch (\Exception $e) {
@@ -44,14 +44,17 @@ class FundFetcher
         // 2. Sina Off-exchange (Fallback)
         if (empty($result['name']) || empty($result['netValue'])) {
             try {
-                $url = "https://hq.sinajs.cn/list=f_{$code}";
+                $url  = "https://hq.sinajs.cn/list=f_{$code}";
                 $text = $this->curlGet($url, ['Referer: https://finance.sina.com.cn'], true); // true for GBK to UTF-8
                 if (preg_match('/"(.*)"/', $text, $matches)) {
                     $parts = explode(',', $matches[1]);
                     if (count($parts) > 1) {
-                        if (empty($result['name'])) $result['name'] = $parts[0];
-                        if (empty($result['netValue'])) $result['netValue'] = floatval($parts[1]);
-                        if (empty($result['price'])) $result['price'] = $result['netValue'];
+                        if (empty($result['name']))
+                            $result['name'] = $parts[0];
+                        if (empty($result['netValue']))
+                            $result['netValue'] = floatval($parts[1]);
+                        if (empty($result['price']))
+                            $result['price'] = $result['netValue'];
                         $result['source'] = $result['source'] ?: 'Sina-Off';
                     }
                 }
@@ -63,15 +66,16 @@ class FundFetcher
         // 3. Sina On-exchange
         try {
             $prefix = (strpos($code, '50') === 0) ? 'sh' : 'sz';
-            $url = "https://hq.sinajs.cn/list={$prefix}{$code}";
-            $text = $this->curlGet($url, ['Referer: https://finance.sina.com.cn'], true); // GBK decode
+            $url    = "https://hq.sinajs.cn/list={$prefix}{$code}";
+            $text   = $this->curlGet($url, ['Referer: https://finance.sina.com.cn'], true); // GBK decode
             if (preg_match('/"(.*)"/', $text, $matches)) {
                 $parts = explode(',', $matches[1]);
                 if (count($parts) > 1) {
-                    $result['stockName'] = $parts[0];
+                    $result['stockName']   = $parts[0];
                     $result['marketPrice'] = floatval($parts[3] ?? 0);
-                    $result['volume'] = floatval($parts[9] ?? 0);
-                    if (empty($result['name'])) $result['name'] = $parts[0];
+                    $result['volume']      = floatval($parts[9] ?? 0);
+                    if (empty($result['name']))
+                        $result['name'] = $parts[0];
                 }
             }
         } catch (\Exception $e) {
@@ -90,7 +94,7 @@ class FundFetcher
                 'Connection: keep-alive'
             ];
 
-            $url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNBaseInfo?pageIndex=1&pageSize=200&appType=ttjj&product=EFund&plat=Android&deviceid=1&Version=1&Fcode={$code}";
+            $url      = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNBaseInfo?pageIndex=1&pageSize=200&appType=ttjj&product=EFund&plat=Android&deviceid=1&Version=1&Fcode={$code}";
             $infoData = json_decode($this->curlGet($url, $commonHeaders), true);
 
             if ($infoData && isset($infoData['Datas'])) {
@@ -100,14 +104,15 @@ class FundFetcher
                     if (mb_strpos($result['purchaseStatus'], '限') !== false) {
                         try {
                             $limitHeaders = $commonHeaders;
-                            $limitHeaders = array_filter($limitHeaders, function($v) { return strpos($v, 'Host:') === false; });
-                            $limitUrl = "https://api.fund.eastmoney.com/Fund/GetSingleFundInfo?fcode={$code}&fileds=FCODE,RZDF,SHORTNAME,FUNDTYPE,DTZT,ISSALES,ISBUY,RISKLEVEL,MINSG,MINDT,MAXSG,RATE,SYL_1N";
-                            
+                            $limitHeaders = array_filter($limitHeaders, function ($v) {
+                                return strpos($v, 'Host:') === false; });
+                            $limitUrl     = "https://api.fund.eastmoney.com/Fund/GetSingleFundInfo?fcode={$code}&fileds=FCODE,RZDF,SHORTNAME,FUNDTYPE,DTZT,ISSALES,ISBUY,RISKLEVEL,MINSG,MINDT,MAXSG,RATE,SYL_1N";
+
                             $limitData = json_decode($this->curlGet($limitUrl, $limitHeaders), true);
                             if ($limitData && isset($limitData['Data']['MAXSG'])) {
                                 $maxSg = floatval($limitData['Data']['MAXSG']);
                                 if ($maxSg > 0) {
-                                    $formattedLimit = $maxSg >= 10000 ? ($maxSg / 10000) . "万" : $maxSg . "元";
+                                    $formattedLimit           = $maxSg >= 10000 ? ($maxSg / 10000) . "万" : $maxSg . "元";
                                     $result['purchaseStatus'] = $formattedLimit;
                                 }
                             }
@@ -117,28 +122,36 @@ class FundFetcher
                     }
                 }
 
-                if (empty($result['name']) && !empty($d['SHORTNAME'])) $result['name'] = $d['SHORTNAME'];
-                if (empty($result['price']) && !empty($d['DWJZ'])) $result['price'] = floatval($d['DWJZ']);
-                if (empty($result['netValue']) && !empty($d['DWJZ'])) $result['netValue'] = floatval($d['DWJZ']);
-                if (empty($result['purchaseFee']) && !empty($d['RATE'])) $result['purchaseFee'] = $d['RATE'];
+                if (empty($result['name']) && !empty($d['SHORTNAME']))
+                    $result['name'] = $d['SHORTNAME'];
+                if (empty($result['price']) && !empty($d['DWJZ']))
+                    $result['price'] = floatval($d['DWJZ']);
+                if (empty($result['netValue']) && !empty($d['DWJZ']))
+                    $result['netValue'] = floatval($d['DWJZ']);
+                if (empty($result['purchaseFee']) && !empty($d['RATE']))
+                    $result['purchaseFee'] = $d['RATE'];
             }
 
             // Fallback old API
             if (empty($result['netValue'])) {
-                $url = "https://fundmobapi.eastmoney.com/FundMApi/FundVarietieFundamental.ashx?FundCode={$code}";
+                $url  = "https://fundmobapi.eastmoney.com/FundMApi/FundVarietieFundamental.ashx?FundCode={$code}";
                 $data = json_decode($this->curlGet($url, $commonHeaders), true);
                 if ($data && isset($data['Datas'])) {
                     $d = $data['Datas'];
-                    if (empty($result['name']) && !empty($d['SHORTNAME'])) $result['name'] = $d['SHORTNAME'];
-                    if (empty($result['price']) && !empty($d['DWJZ'])) $result['price'] = floatval($d['DWJZ']);
-                    if (empty($result['netValue']) && !empty($d['DWJZ'])) $result['netValue'] = floatval($d['DWJZ']);
-                    if (empty($result['purchaseFee']) && !empty($d['SGRATE'])) $result['purchaseFee'] = $d['SGRATE'];
+                    if (empty($result['name']) && !empty($d['SHORTNAME']))
+                        $result['name'] = $d['SHORTNAME'];
+                    if (empty($result['price']) && !empty($d['DWJZ']))
+                        $result['price'] = floatval($d['DWJZ']);
+                    if (empty($result['netValue']) && !empty($d['DWJZ']))
+                        $result['netValue'] = floatval($d['DWJZ']);
+                    if (empty($result['purchaseFee']) && !empty($d['SGRATE']))
+                        $result['purchaseFee'] = $d['SGRATE'];
                 }
             }
 
             // Fee fallback
             if (empty($result['purchaseFee'])) {
-                $url = "https://fundmobapi.eastmoney.com/FundMApi/FundTradeInfo.ashx?FCODE={$code}&deviceid=Wap&plat=Wap&product=EFund&version=2.0.0&_=" . time() . "000";
+                $url       = "https://fundmobapi.eastmoney.com/FundMApi/FundTradeInfo.ashx?FCODE={$code}&deviceid=Wap&plat=Wap&product=EFund&version=2.0.0&_=" . time() . "000";
                 $tradeData = json_decode($this->curlGet($url, $commonHeaders), true);
                 if ($tradeData && isset($tradeData['Datas']['BUY_FEE'])) {
                     $result['purchaseFee'] = $tradeData['Datas']['BUY_FEE'];
@@ -162,7 +175,17 @@ class FundFetcher
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
 
-        $output = curl_exec($ch);
+        $startTime   = microtime(true);
+        $output      = curl_exec($ch);
+        $elapsedTime = microtime(true) - $startTime;
+        $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        // 记录每次请求的耗时，方便排查哪个接口最慢（如果是调试可以改为 'info' 或 'debug'）
+        // 这里使用 'error' 或 'warning' 级别是为了确保它能被写入日志文件（通常阈值较低）
+        if ($elapsedTime > 0.5) {
+            log_message('info', sprintf("FundFetcher: [%.3fs] HTTP %d - %s", $elapsedTime, $httpCode, $url));
+        }
+
         curl_close($ch);
 
         if ($output && $isGbk) {

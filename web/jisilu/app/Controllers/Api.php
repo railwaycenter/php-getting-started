@@ -420,11 +420,18 @@ class Api extends ResourceController
             $builder->limit($limit);
         }
 
-        $funds        = $builder->findAll();
-        $successCount = 0;
-        $details      = [];
+        $funds         = $builder->findAll();
+        $successCount  = 0;
+        $details       = [];
+        $loopStartTime = microtime(true); // 记录循环开始时间
 
         foreach ($funds as $f) {
+            // 防超时机制：如果执行时间超过 25 秒（预留时间防止被强制中断），则安全退出
+            if (microtime(true) - $loopStartTime > 25) {
+                log_message('warning', "runUpdatePricesInternal: Execution time approaching 30s limit, breaking loop early.");
+                break;
+            }
+
             try {
                 // 采集时增加微小延迟，避免被封禁
                 usleep(300000);
