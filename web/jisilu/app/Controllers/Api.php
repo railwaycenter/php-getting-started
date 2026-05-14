@@ -14,61 +14,61 @@ class Api extends ResourceController
     public function getLofData()
     {
         $category = $this->request->getGet('category');
-        $search = trim($this->request->getGet('search'));
-        
+        $search   = trim($this->request->getGet('search'));
+
         $model = new LofFundsModel();
-        
+
         try {
             $funds = $model->getActiveFunds($category, $search);
 
-            $allStatsQuery = $model->select('premium_rate, volume')->where('is_deleted', false)->findAll();
-            $totalCount = 0;
+            $allStatsQuery  = $model->select('premium_rate, volume')->where('is_deleted', false)->findAll();
+            $totalCount     = 0;
             $averagePremium = 0;
-            $totalVolume = 0;
+            $totalVolume    = 0;
 
             if ($allStatsQuery && count($allStatsQuery) > 0) {
                 $totalCount = count($allStatsQuery);
                 // PHP 8+ strictness: array_column fails if input is empty or invalid
                 $premiumColumn = array_column($allStatsQuery, 'premium_rate');
-                $volumeColumn = array_column($allStatsQuery, 'volume');
-                
+                $volumeColumn  = array_column($allStatsQuery, 'volume');
+
                 if (!empty($premiumColumn)) {
-                    $premiumSum = array_sum($premiumColumn);
+                    $premiumSum     = array_sum($premiumColumn);
                     $averagePremium = $premiumSum / $totalCount;
                 }
-                
+
                 if (!empty($volumeColumn)) {
                     $totalVolume = array_sum($volumeColumn);
                 }
             }
 
             // CamelCase mapping for the frontend compatibility
-            $mappedFunds = array_map(function($f) {
+            $mappedFunds = array_map(function ($f) {
                 return [
-                    'id' => $f['id'],
-                    'code' => $f['code'],
-                    'name' => $f['name'],
-                    'stockName' => $f['stock_name'],
-                    'price' => (float)$f['price'],
-                    'marketPrice' => (float)$f['market_price'],
-                    'netValue' => (float)$f['net_value'],
-                    'premiumRate' => (float)$f['premium_rate'],
-                    'volume' => (float)$f['volume'],
-                    'turnoverRate' => (float)$f['turnover_rate'],
-                    'alertThreshold' => (float)$f['alert_threshold'],
-                    'lastUpdate' => $f['last_update'],
-                    'category' => $f['category'],
+                    'id'             => $f['id'],
+                    'code'           => $f['code'],
+                    'name'           => $f['name'],
+                    'stockName'      => $f['stock_name'],
+                    'price'          => (float) $f['price'],
+                    'marketPrice'    => (float) $f['market_price'],
+                    'netValue'       => (float) $f['net_value'],
+                    'premiumRate'    => (float) $f['premium_rate'],
+                    'volume'         => (float) $f['volume'],
+                    'turnoverRate'   => (float) $f['turnover_rate'],
+                    'alertThreshold' => (float) $f['alert_threshold'],
+                    'lastUpdate'     => $f['last_update'],
+                    'category'       => $f['category'],
                     'purchaseStatus' => $f['purchase_status'],
-                    'purchaseFee' => $f['purchase_fee']
+                    'purchaseFee'    => $f['purchase_fee']
                 ];
             }, $funds);
 
             return $this->respond([
-                'list' => $mappedFunds,
+                'list'  => $mappedFunds,
                 'stats' => [
-                    'totalCount' => $totalCount,
+                    'totalCount'     => $totalCount,
                     'averagePremium' => $averagePremium,
-                    'totalVolume' => $totalVolume
+                    'totalVolume'    => $totalVolume
                 ]
             ]);
         } catch (\Exception $e) {
@@ -91,29 +91,31 @@ class Api extends ResourceController
         // classification function logic
         $categoryToUse = $this->classifyFund($json->code, $json->name);
 
-        $p = isset($json->price) ? (float)$json->price : 1.0;
-        $mp = isset($json->marketPrice) ? (float)$json->marketPrice : $p;
-        $nv = isset($json->netValue) ? (float)$json->netValue : 1.0;
-        $at = isset($json->alertThreshold) ? (float)$json->alertThreshold : 10.0;
-        $vol = isset($json->volume) ? (float)$json->volume : 0;
+        $p           = isset($json->price) ? (float) $json->price : 1.0;
+        $mp          = isset($json->marketPrice) ? (float) $json->marketPrice : $p;
+        $nv          = isset($json->netValue) ? (float) $json->netValue : 1.0;
+        $at          = isset($json->alertThreshold) ? (float) $json->alertThreshold : 10.0;
+        $vol         = isset($json->volume) ? (float) $json->volume : 0;
         $premiumRate = $nv > 0 ? (($mp - $nv) / $nv) * 100 : 0;
 
         if ($existing) {
             if ($existing['is_deleted']) {
                 $updatePayload = [
-                    'is_deleted' => false,
-                    'name' => $json->name,
-                    'stock_name' => $json->stockName ?? null,
-                    'price' => $p,
+                    'is_deleted'   => false,
+                    'name'         => $json->name,
+                    'stock_name'   => $json->stockName ?? null,
+                    'price'        => $p,
                     'market_price' => $mp,
-                    'net_value' => $nv,
+                    'net_value'    => $nv,
                     'premium_rate' => $premiumRate,
-                    'volume' => $vol,
-                    'last_update' => date('Y-m-d H:i:s'),
-                    'category' => $categoryToUse
+                    'volume'       => $vol,
+                    'last_update'  => date('Y-m-d H:i:s'),
+                    'category'     => $categoryToUse
                 ];
-                if (isset($json->purchaseStatus)) $updatePayload['purchase_status'] = $json->purchaseStatus;
-                if (isset($json->purchaseFee)) $updatePayload['purchase_fee'] = $json->purchaseFee;
+                if (isset($json->purchaseStatus))
+                    $updatePayload['purchase_status'] = $json->purchaseStatus;
+                if (isset($json->purchaseFee))
+                    $updatePayload['purchase_fee'] = $json->purchaseFee;
 
                 $model->update($existing['id'], $updatePayload);
                 return $this->respond(['success' => true, 'message' => "记录已恢复"]);
@@ -124,22 +126,24 @@ class Api extends ResourceController
             // Because TS lacked auto ID generation in insert except for whatever Supabase did,
             // we will let the database create the ID or simulate UUID
             $insertPayload = [
-                'code' => $json->code,
-                'name' => $json->name,
-                'stock_name' => $json->stockName ?? null,
-                'price' => $p,
-                'market_price' => $mp,
-                'net_value' => $nv,
-                'premium_rate' => $premiumRate,
-                'volume' => $vol,
-                'turnover_rate' => 0,
+                'code'            => $json->code,
+                'name'            => $json->name,
+                'stock_name'      => $json->stockName ?? null,
+                'price'           => $p,
+                'market_price'    => $mp,
+                'net_value'       => $nv,
+                'premium_rate'    => $premiumRate,
+                'volume'          => $vol,
+                'turnover_rate'   => 0,
                 'alert_threshold' => $at,
-                'last_update' => date('Y-m-d H:i:s'),
-                'category' => $categoryToUse,
-                'is_deleted' => false
+                'last_update'     => date('Y-m-d H:i:s'),
+                'category'        => $categoryToUse,
+                'is_deleted'      => false
             ];
-            if (isset($json->purchaseStatus)) $insertPayload['purchase_status'] = $json->purchaseStatus;
-            if (isset($json->purchaseFee)) $insertPayload['purchase_fee'] = $json->purchaseFee;
+            if (isset($json->purchaseStatus))
+                $insertPayload['purchase_status'] = $json->purchaseStatus;
+            if (isset($json->purchaseFee))
+                $insertPayload['purchase_fee'] = $json->purchaseFee;
 
             $model->insert($insertPayload);
             return $this->respondCreated(['success' => true]);
@@ -154,38 +158,40 @@ class Api extends ResourceController
         }
 
         $fetcher = new \App\Libraries\FundFetcher();
-        $model = new LofFundsModel();
+        $model   = new LofFundsModel();
 
         $successCount = 0;
-        $errorCount = 0;
+        $errorCount   = 0;
 
         foreach ($json->codes as $code) {
             try {
                 $data = $fetcher->fetchFund($code);
                 if ($data) {
-                    $p = $data['price'] ?: ($data['netValue'] ?: 1.0);
-                    $mp = $data['marketPrice'] ?: $p;
-                    $nv = $data['netValue'] ?: $p;
+                    $p           = $data['price'] ?: ($data['netValue'] ?: 1.0);
+                    $mp          = $data['marketPrice'] ?: $p;
+                    $nv          = $data['netValue'] ?: $p;
                     $premiumRate = $nv > 0 ? (($mp - $nv) / $nv) * 100 : 0;
-                    $category = $this->classifyFund($code, $data['name']);
-                    
+                    $category    = $this->classifyFund($code, $data['name']);
+
                     $insertPayload = [
-                        'code' => $code,
-                        'name' => $data['name'],
-                        'stock_name' => $data['stockName'],
-                        'price' => $p,
-                        'market_price' => $mp,
-                        'net_value' => $nv,
-                        'premium_rate' => $premiumRate,
-                        'volume' => $data['volume'] ?: 0,
-                        'turnover_rate' => 0,
+                        'code'            => $code,
+                        'name'            => $data['name'],
+                        'stock_name'      => $data['stockName'],
+                        'price'           => $p,
+                        'market_price'    => $mp,
+                        'net_value'       => $nv,
+                        'premium_rate'    => $premiumRate,
+                        'volume'          => $data['volume'] ?: 0,
+                        'turnover_rate'   => 0,
                         'alert_threshold' => 10.0,
-                        'last_update' => date('Y-m-d H:i:s'),
-                        'category' => $category,
-                        'is_deleted' => false
+                        'last_update'     => date('Y-m-d H:i:s'),
+                        'category'        => $category,
+                        'is_deleted'      => false
                     ];
-                    if (!empty($data['purchaseStatus'])) $insertPayload['purchase_status'] = $data['purchaseStatus'];
-                    if (!empty($data['purchaseFee'])) $insertPayload['purchase_fee'] = $data['purchaseFee'];
+                    if (!empty($data['purchaseStatus']))
+                        $insertPayload['purchase_status'] = $data['purchaseStatus'];
+                    if (!empty($data['purchaseFee']))
+                        $insertPayload['purchase_fee'] = $data['purchaseFee'];
 
                     if ($model->insert($insertPayload)) {
                         $successCount++;
@@ -209,36 +215,39 @@ class Api extends ResourceController
     public function updateFund($id = null)
     {
         $json = $this->request->getJSON();
-        if (!$id || !$json) return $this->failValidationError();
+        if (!$id || !$json)
+            return $this->failValidationError();
 
         $model = new LofFundsModel();
 
-        $p = isset($json->price) ? (float)$json->price : 0;
-        $mp = isset($json->marketPrice) ? (float)$json->marketPrice : $p;
-        $nv = isset($json->netValue) ? (float)$json->netValue : 0;
-        $at = isset($json->alertThreshold) ? (float)$json->alertThreshold : 10.0;
-        $vol = isset($json->volume) ? (float)$json->volume : 0;
+        $p           = isset($json->price) ? (float) $json->price : 0;
+        $mp          = isset($json->marketPrice) ? (float) $json->marketPrice : $p;
+        $nv          = isset($json->netValue) ? (float) $json->netValue : 0;
+        $at          = isset($json->alertThreshold) ? (float) $json->alertThreshold : 10.0;
+        $vol         = isset($json->volume) ? (float) $json->volume : 0;
         $premiumRate = $nv > 0 ? (($mp - $nv) / $nv) * 100 : 0;
 
-        $categoryToUse = isset($json->category) && !empty($json->category) 
-            ? $json->category 
+        $categoryToUse = isset($json->category) && !empty($json->category)
+            ? $json->category
             : $this->classifyFund($json->code, $json->name);
 
         $updatePayload = [
-            'code' => $json->code,
-            'name' => $json->name,
-            'stock_name' => $json->stockName ?? null,
-            'category' => $categoryToUse,
-            'price' => $p,
-            'market_price' => $mp,
-            'net_value' => $nv,
-            'premium_rate' => $premiumRate,
+            'code'            => $json->code,
+            'name'            => $json->name,
+            'stock_name'      => $json->stockName ?? null,
+            'category'        => $categoryToUse,
+            'price'           => $p,
+            'market_price'    => $mp,
+            'net_value'       => $nv,
+            'premium_rate'    => $premiumRate,
             'alert_threshold' => $at,
-            'volume' => $vol,
-            'last_update' => date('Y-m-d H:i:s')
+            'volume'          => $vol,
+            'last_update'     => date('Y-m-d H:i:s')
         ];
-        if (isset($json->purchaseStatus)) $updatePayload['purchase_status'] = $json->purchaseStatus;
-        if (isset($json->purchaseFee)) $updatePayload['purchase_fee'] = $json->purchaseFee;
+        if (isset($json->purchaseStatus))
+            $updatePayload['purchase_status'] = $json->purchaseStatus;
+        if (isset($json->purchaseFee))
+            $updatePayload['purchase_fee'] = $json->purchaseFee;
 
         $model->update($id, $updatePayload);
         return $this->respond(['success' => true]);
@@ -246,7 +255,8 @@ class Api extends ResourceController
 
     public function deleteFund($id = null)
     {
-        if (!$id) return $this->failValidationError();
+        if (!$id)
+            return $this->failValidationError();
         $model = new LofFundsModel();
         $model->update($id, ['is_deleted' => true]);
         return $this->respondDeleted(['success' => true]);
@@ -255,23 +265,24 @@ class Api extends ResourceController
     public function getSettings()
     {
         $settingsModel = new \App\Models\SettingsModel();
-        $settings = $settingsModel->getAllSettings();
-        
+        $settings      = $settingsModel->getAllSettings();
+
         return $this->respond([
-            'appTitle' => $settings['app_title'] ?? "集思录 LOF 数据仿制版",
-            'frontendRefreshInterval' => (int)($settings['frontend_refresh_interval'] ?? 10),
-            'batchSize' => (int)($settings['batch_size'] ?? 50),
-            'customCategories' => $settings['custom_categories'] ?? 'LOF:普通LOF,IndexLOF:指数LOF,StockLOF:股票型LOF'
+            'appTitle'                => $settings['app_title'] ?? "集思录 LOF 数据仿制版",
+            'frontendRefreshInterval' => (int) ($settings['frontend_refresh_interval'] ?? 10),
+            'batchSize'               => (int) ($settings['batch_size'] ?? 50),
+            'customCategories'        => $settings['custom_categories'] ?? 'LOF:普通LOF,IndexLOF:指数LOF,StockLOF:股票型LOF'
         ]);
     }
 
     public function saveSettings()
     {
         $json = $this->request->getJSON();
-        if (!$json) return $this->failValidationError();
+        if (!$json)
+            return $this->failValidationError();
 
         $settingsModel = new \App\Models\SettingsModel();
-        
+
         if (isset($json->appTitle)) {
             $settingsModel->setSetting('app_title', $json->appTitle);
         }
@@ -279,7 +290,7 @@ class Api extends ResourceController
             $settingsModel->setSetting('frontend_refresh_interval', $json->frontendRefreshInterval);
         }
         if (isset($json->batchSize)) {
-            $settingsModel->setSetting('batch_size', (int)$json->batchSize);
+            $settingsModel->setSetting('batch_size', (int) $json->batchSize);
         }
         if (isset($json->customCategories)) {
             $settingsModel->setSetting('custom_categories', $json->customCategories);
@@ -290,17 +301,17 @@ class Api extends ResourceController
 
     public function login()
     {
-        $json = $this->request->getJSON();
+        $json     = $this->request->getJSON();
         $password = $json->password ?? '';
 
         $settingsModel = new \App\Models\SettingsModel();
-        $hash = $settingsModel->getSetting('admin_password_hash');
+        $hash          = $settingsModel->getSetting('admin_password_hash');
 
         if ($hash && password_verify($password, $hash)) {
             // 生成动态随机 Token
             $dynamicToken = bin2hex(random_bytes(16));
             $settingsModel->setSetting('admin_active_token', $dynamicToken);
-            
+
             return $this->respond(['success' => true, 'token' => $dynamicToken]);
         }
 
@@ -311,34 +322,35 @@ class Api extends ResourceController
     {
         $model = new LofFundsModel();
         $funds = $model->select('premium_rate, volume')->where('is_deleted', false)->findAll();
-        
-        $totalCount = count($funds);
+
+        $totalCount     = count($funds);
         $averagePremium = 0;
-        $totalVolume = 0;
+        $totalVolume    = 0;
         if ($totalCount > 0) {
-            $premiumSum = array_sum(array_column($funds, 'premium_rate'));
+            $premiumSum     = array_sum(array_column($funds, 'premium_rate'));
             $averagePremium = $premiumSum / $totalCount;
-            $totalVolume = array_sum(array_column($funds, 'volume'));
+            $totalVolume    = array_sum(array_column($funds, 'volume'));
         }
 
         return $this->respond([
-            'totalCount' => $totalCount,
+            'totalCount'     => $totalCount,
             'averagePremium' => $averagePremium,
-            'totalVolume' => $totalVolume
+            'totalVolume'    => $totalVolume
         ]);
     }
 
     public function fundLookup($code = null)
     {
-        if (!$code) return $this->failValidationError();
-        
+        if (!$code)
+            return $this->failValidationError();
+
         $fetcher = new \App\Libraries\FundFetcher();
-        $data = $fetcher->fetchFund($code);
+        $data    = $fetcher->fetchFund($code);
 
         if ($data) {
-            $category = $this->classifyFund($code, $data['name']);
+            $category     = $this->classifyFund($code, $data['name']);
             $responseData = array_merge($data, [
-                'category' => $category,
+                'category'   => $category,
                 'lastUpdate' => date('c')
             ]);
             return $this->respond($responseData);
@@ -360,27 +372,32 @@ class Api extends ResourceController
      */
     public function cronUpdate()
     {
+        $startTime = microtime(true);
         // 关键修复：延长脚本执行时间至 300 秒，因为采集基金数据需要较长时间
-        set_time_limit(300);
+        // set_time_limit(300);
 
         $providedKey = $this->request->getGet('key');
-        if (!$providedKey) return $this->failUnauthorized("缺少密钥");
+        if (!$providedKey)
+            return $this->failUnauthorized("缺少密钥");
 
         $settingsModel = new \App\Models\SettingsModel();
-        $savedKey = $settingsModel->getSetting('cron_secret_key');
+        $savedKey      = $settingsModel->getSetting('cron_secret_key');
 
         if (empty($savedKey) || $providedKey !== $savedKey) {
             return $this->failUnauthorized("密钥无效或未设置");
         }
 
-        $batchSize = (int)$settingsModel->getSetting('batch_size', 50);
-        $result = $this->runUpdatePricesInternal(false, $batchSize, true);
-        
+        $batchSize = (int) $settingsModel->getSetting('batch_size', 50);
+        $result    = $this->runUpdatePricesInternal(false, $batchSize, true);
+
+        $executionTime = round(microtime(true) - $startTime, 2);
+
         return $this->respond([
-            'success' => true, 
-            'summary' => "成功处理了 {$result['count']} 条数据",
-            'updated_list' => $result['details'],
-            'timestamp' => date('Y-m-d H:i:s')
+            'success'        => true,
+            'summary'        => "成功处理了 {$result['count']} 条数据",
+            'execution_time' => "总耗时 {$executionTime} s",
+            'timestamp'      => date('Y-m-d H:i:s', time() + 8 * 3600), // 修正为北京时间 (UTC+8)
+            'updated_list'   => $result['details']
         ]);
     }
 
@@ -393,29 +410,29 @@ class Api extends ResourceController
      */
     public function runUpdatePricesInternal($syncNamesOnly = false, $limit = null, $returnDetails = false)
     {
-        $model = new LofFundsModel();
+        $model   = new LofFundsModel();
         $fetcher = new \App\Libraries\FundFetcher();
-        
+
         $builder = $model->where('is_deleted', false)
-                         ->orderBy('last_update', 'ASC'); // 轮询逻辑：优先抓取最久未更新的数据
+            ->orderBy('last_update', 'ASC'); // 轮询逻辑：优先抓取最久未更新的数据
 
         if ($limit) {
             $builder->limit($limit);
         }
 
-        $funds = $builder->findAll();
+        $funds        = $builder->findAll();
         $successCount = 0;
-        $details = [];
+        $details      = [];
 
         foreach ($funds as $f) {
             try {
                 // 采集时增加微小延迟，避免被封禁
-                usleep(300000); 
-                
+                usleep(300000);
+
                 $data = $fetcher->fetchFund($f['code']);
                 if ($data) {
-                    $nv = $data['netValue'] ?: ($f['net_value'] ?: 1);
-                    $price = $data['price'] ?: $nv;
+                    $nv          = $data['netValue'] ?: ($f['net_value'] ?: 1);
+                    $price       = $data['price'] ?: $nv;
                     $marketPrice = $data['marketPrice'] ?: $price;
                     $premiumRate = $nv > 0 ? (($marketPrice - $nv) / $nv) * 100 : 0;
 
@@ -424,25 +441,27 @@ class Api extends ResourceController
                     ];
 
                     if ($syncNamesOnly) {
-                        $payload['name'] = $data['name'];
+                        $payload['name']       = $data['name'];
                         $payload['stock_name'] = $data['stockName'];
                     } else {
-                        $payload['price'] = $data['price'];
+                        $payload['price']        = $data['price'];
                         $payload['market_price'] = $data['marketPrice'];
-                        $payload['net_value'] = $nv;
+                        $payload['net_value']    = $nv;
                         $payload['premium_rate'] = $premiumRate;
-                        $payload['volume'] = $data['volume'];
-                        if (!empty($data['purchaseStatus'])) $payload['purchase_status'] = $data['purchaseStatus'];
-                        if (!empty($data['purchaseFee'])) $payload['purchase_fee'] = $data['purchaseFee'];
+                        $payload['volume']       = $data['volume'];
+                        if (!empty($data['purchaseStatus']))
+                            $payload['purchase_status'] = $data['purchaseStatus'];
+                        if (!empty($data['purchaseFee']))
+                            $payload['purchase_fee'] = $data['purchaseFee'];
                     }
 
                     $model->update($f['id'], $payload);
                     $successCount++;
                     if ($returnDetails) {
                         $details[] = [
-                            'code' => $f['code'],
-                            'name' => $data['name'],
-                            'price' => $marketPrice,
+                            'code'    => $f['code'],
+                            'name'    => $data['name'],
+                            'price'   => $marketPrice,
                             'premium' => round($premiumRate, 2) . '%'
                         ];
                     }
@@ -463,25 +482,59 @@ class Api extends ResourceController
     private function classifyFund($code, $name)
     {
         $indexKeywords = [
-            '指数', '300', '500', '1000', '50', '800', '红利', '价值', '成长', 
-            '恒生', '纳斯达克', '标普', '道琼斯', '中证', '上证', '深证', 
-            '创业板', '科创', '全指', '细分', '等权', '策略'
+            '指数',
+            '300',
+            '500',
+            '1000',
+            '50',
+            '800',
+            '红利',
+            '价值',
+            '成长',
+            '恒生',
+            '纳斯达克',
+            '标普',
+            '道琼斯',
+            '中证',
+            '上证',
+            '深证',
+            '创业板',
+            '科创',
+            '全指',
+            '细分',
+            '等权',
+            '策略'
         ];
-        
+
         $stockKeywords = [
-            '股票', '精选', '核心', '优选', '主题', '行业', '领先', 
-            '配置', '混合', '灵活', '积极', '动力', '回报', '机遇'
+            '股票',
+            '精选',
+            '核心',
+            '优选',
+            '主题',
+            '行业',
+            '领先',
+            '配置',
+            '混合',
+            '灵活',
+            '积极',
+            '动力',
+            '回报',
+            '机遇'
         ];
 
         foreach ($indexKeywords as $k) {
-            if (mb_strpos($name, $k) !== false) return 'IndexLOF';
+            if (mb_strpos($name, $k) !== false)
+                return 'IndexLOF';
         }
 
         foreach ($stockKeywords as $k) {
-            if (mb_strpos($name, $k) !== false) return 'StockLOF';
+            if (mb_strpos($name, $k) !== false)
+                return 'StockLOF';
         }
-        
-        if (strpos($code, '50') === 0) return 'StockLOF';
+
+        if (strpos($code, '50') === 0)
+            return 'StockLOF';
 
         return 'LOF';
     }
